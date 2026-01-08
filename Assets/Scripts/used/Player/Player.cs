@@ -42,6 +42,9 @@ public class Player : MonoBehaviour
     [Range(0f, 0.5f)]
     public float coyoteTime = 0.2f;
 
+    [Space(10)]
+    [Header("Скорость")]
+    public float speedMultiplier = 1f; // модификатор скорости (1 = норма)
 
     [Space(10)]
     [Header("=== АНИМАЦИИ ===")]
@@ -226,38 +229,38 @@ public class Player : MonoBehaviour
         {
             
             if (Input.GetKey(KeyCode.LeftShift))
-                movement += transform.forward * (Settings.speedPlayer * 2f);
-            else movement += transform.forward * Settings.speedPlayer;
+                movement += transform.forward * (Settings.speedPlayer * speedMultiplier * 2f);
+            else movement += transform.forward * Settings.speedPlayer * speedMultiplier;
             if (Input.GetKey(KeyCode.LeftControl))
-                movement += transform.forward * (Settings.speedPlayer / 8f);
-            else movement += transform.forward * Settings.speedPlayer;
+                movement += transform.forward * (Settings.speedPlayer * speedMultiplier / 8f);
+            else movement += transform.forward * Settings.speedPlayer * speedMultiplier;
         }
         if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)))
         {
             if (Input.GetKey(KeyCode.LeftShift))
-                movement -= transform.forward * (Settings.speedPlayer * 2f);
-            else movement -= transform.forward * Settings.speedPlayer;
+                movement -= transform.forward * (Settings.speedPlayer * speedMultiplier * 2f);
+            else movement -= transform.forward * Settings.speedPlayer * speedMultiplier;
             if (Input.GetKey(KeyCode.LeftControl))
-                movement -= transform.forward * (Settings.speedPlayer / 8f);
-            else movement -= transform.forward * Settings.speedPlayer;
+                movement -= transform.forward * (Settings.speedPlayer * speedMultiplier / 8f);
+            else movement -= transform.forward * Settings.speedPlayer * speedMultiplier;
         }
         if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)))
         {
             if (Input.GetKey(KeyCode.LeftShift))
-                movement -= transform.right * (Settings.speedPlayer * 2f);
-            else movement -= transform.right * Settings.speedPlayer;
+                movement -= transform.right * (Settings.speedPlayer * speedMultiplier * 2f);
+            else movement -= transform.right * Settings.speedPlayer * speedMultiplier;
             if (Input.GetKey(KeyCode.LeftControl))
-                movement -= transform.right * (Settings.speedPlayer / 8f);
-            else movement -= transform.right * Settings.speedPlayer;
+                movement -= transform.right * (Settings.speedPlayer * speedMultiplier / 8f);
+            else movement -= transform.right * Settings.speedPlayer * speedMultiplier;
         }
         if ((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)))
         {
             if (Input.GetKey(KeyCode.LeftShift))
-                movement += transform.right * (Settings.speedPlayer * 2f);
-            else movement += transform.right * Settings.speedPlayer;
+                movement += transform.right * (Settings.speedPlayer * speedMultiplier * 2f);
+            else movement += transform.right * Settings.speedPlayer * speedMultiplier;
             if (Input.GetKey(KeyCode.LeftControl))
-                movement += transform.right * (Settings.speedPlayer / 8f);
-            else movement += transform.right * Settings.speedPlayer;
+                movement += transform.right * (Settings.speedPlayer * speedMultiplier / 8f);
+            else movement += transform.right * Settings.speedPlayer * speedMultiplier;
         }
         rb.velocity = movement;
 
@@ -266,7 +269,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        /* прицел говна */
+        /* прицел */
         if (Input.GetMouseButtonDown(1))
         {
             if (!zoomed)
