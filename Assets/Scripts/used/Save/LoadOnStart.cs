@@ -19,14 +19,13 @@ public class LoadOnStart : MonoBehaviour
             return;
         }
 
-        var player = GameManager.player; // у тебя уже проставляется
+        var player = GameManager.player; 
         if (player == null)
         {
             Debug.LogWarning("[SaveSystem] no player");
             return;
         }
 
-        // восстановить статы
         player.playerHP = data.playerHP;
         if (player.textHP) player.textHP.text = player.playerHP.ToString();
         if (player.healtBar) player.healtBar.SetHealth((int)player.playerHP, 100);
@@ -55,7 +54,6 @@ public class LoadOnStart : MonoBehaviour
         }
         else if (data.playerPosition != null && data.playerPosition.Length == 3)
         {
-            // fallback — если станция не найдена
             player.transform.position = new Vector3(data.playerPosition[0], data.playerPosition[1], data.playerPosition[2]);
             Debug.Log("Не вошеу");
         }

@@ -25,7 +25,7 @@ public class PlayerInventory : MonoBehaviour
     {
         if (item == null) return;
         items.Add(item.itemId);
-        // обновлять UI?
+        // обновление UI
         Debug.Log($"Picked up: {item.displayName} ({item.itemId})");
     }
 

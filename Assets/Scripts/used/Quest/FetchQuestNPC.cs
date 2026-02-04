@@ -6,9 +6,12 @@ public class FetchQuestNPC : MonoBehaviour
     [SerializeField] private QuestItemData requiredItem;
 
     [Header("Диалоги")]
-    [SerializeField] private Dialogue beforeQuestDialogue;   // "принеси мне X"
-    [SerializeField] private Dialogue waitingDialogue;       // "ну где оно?"
-    [SerializeField] private Dialogue completedDialogue;     // "спасибо!"
+    [SerializeField] private Dialogue beforeQuestDialogue;   // "принеси мне чтото"
+    [SerializeField] private Dialogue waitingDialogue;       // "ну где?"
+    [SerializeField] private Dialogue completedDialogue;     // "спс"
+
+    [Header("События по выполнении")]
+    [SerializeField] private QuestCompleteActions onCompleteActions;
 
     private bool questGiven = false;
     private bool questCompleted = false;
@@ -28,12 +31,12 @@ public class FetchQuestNPC : MonoBehaviour
             return;
         }
 
-        // квест уже выдан, проверяем предмет
         if (inv != null && inv.Has(requiredItem))
         {
             inv.Remove(requiredItem);
             questCompleted = true;
             DialogueManager.Instance.StartDialogue(completedDialogue);
+            if (onCompleteActions) onCompleteActions.Run();
         }
         else
         {

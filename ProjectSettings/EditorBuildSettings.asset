@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/tutor.unity
     guid: 1ca9a82a2a5d62b46a89e8855ba0da39
+  - enabled: 1
+    path: Assets/Scenes/Home.unity
+    guid: ee263d1e717cf854fac9920f588c5625
+  - enabled: 1
+    path: Assets/Scenes/1loka.unity
+    guid: 9c4103dbf18781144980d06b2ed4fa52
   m_configObjects: {}

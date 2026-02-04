@@ -29,6 +29,10 @@ public class MainMenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("tutor");
     }
+    public void StartGame_4()
+    {
+        SceneManager.LoadScene("1loka");
+    }
 
     public void Settings()
     {
