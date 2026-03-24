@@ -106,7 +106,8 @@ public class PlayerWeapon : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (!Input.GetMouseButton(0) ||
+        if (DialogueManager.IsFireInputBlockedByDialogue() ||
+            !Input.GetMouseButton(0) ||
             GameManager.isPlayerInputBlocked ||
             !_canShoot ||
             IsGrappling)
@@ -151,7 +152,10 @@ private void PerformShooting()
 
 private void HandleMeleeAttack()
     {
-        if (!Input.GetKey(KeyCode.V) || !_canShoot || IsGrappling)
+        if (!Input.GetKey(KeyCode.V) ||
+            GameManager.isPlayerInputBlocked ||
+            !_canShoot ||
+            IsGrappling)
             return;
 
         _canShoot = false;
@@ -191,7 +195,7 @@ private bool TryRaycastEnemy(out RaycastHit hit, out Enemy enemy, float maxDista
 
     private void HandleWeaponSwitch()
     {
-        if (IsGrappling)
+        if (IsGrappling || GameManager.isPlayerInputBlocked)
             return;
 
         HandleScrollSwitch();

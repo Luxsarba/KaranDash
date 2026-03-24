@@ -4,197 +4,352 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Мини-игра "Мемори" — нужно повторить последовательность нажатий.
+/// Memory mini-game: watch the sequence and replay it.
 /// </summary>
 public class MemoryPanel : MonoBehaviour
 {
-    [Header("Настройки игры")]
-    [SerializeField, Range(3, 8)] private int sequenceLength = 4;
-    [SerializeField, Range(0.5f, 2f)] private float buttonDisplayTime = 1f;
-    [SerializeField] private float inputWindowTime = 3f; // Время на ввод одной кнопки
+    public static MemoryPanel ActiveGamePanel { get; private set; }
 
-    [Header("Кнопки")]
+    [Header("Game")]
+    [SerializeField, Range(3, 12)] private int sequenceLength = 6;
+    [SerializeField, Range(1, 8)] private int startRoundLength = 2;
+    [SerializeField, Min(0.05f)] private float initialShowDelay = 0.5f;
+    [SerializeField, Min(0.05f)] private float buttonDisplayTime = 0.6f;
+    [SerializeField, Min(0f)] private float pauseBetweenButtons = 0.25f;
+    [SerializeField, Min(0.2f)] private float inputWindowTime = 3f;
+    [SerializeField] private bool autoRestartOnFail = true;
+    [SerializeField, Min(0f)] private float restartDelay = 1.5f;
+    [Header("Buttons")]
     [SerializeField] private MemoryButton[] buttons;
 
-    [Header("События")]
+    [Header("Events")]
     [SerializeField] private UnityEvent onSuccess;
     [SerializeField] private UnityEvent onFail;
 
-    [Header("Аудио (опционально)")]
+    [Header("Audio (optional)")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip successClip;
     [SerializeField] private AudioClip failClip;
     [SerializeField] private AudioClip[] buttonClips;
 
-    private List<int> _sequence = new List<int>();
-    private int _currentStep = 0;
-    private bool _isPlayingSequence;
-    private bool _isPlayerTurn;
+    private readonly List<int> _sequence = new List<int>();
     private Coroutine _inputTimerCoroutine;
+    private int _currentRoundLength;
+    private int _currentInputIndex;
+    private bool _isShowingSequence;
+    private bool _isPlayerTurn;
+    private bool _isGameRunning;
 
-    private void Start()
+    public static bool IsAnyGameRunning()
     {
-        if (buttons == null || buttons.Length == 0)
-        {
-            buttons = GetComponentsInChildren<MemoryButton>(true);
-        }
-
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            int index = i;
-            buttons[i].Initialize(this, index);
-        }
-
-        GenerateSequence();
+        return ActiveGamePanel != null && ActiveGamePanel._isGameRunning;
     }
 
-    private void GenerateSequence()
+    public static bool IsInteractionInputAllowed()
     {
-        _sequence.Clear();
-        for (int i = 0; i < sequenceLength; i++)
-        {
-            _sequence.Add(Random.Range(0, buttons.Length));
-        }
+        return ActiveGamePanel != null &&
+               ActiveGamePanel._isGameRunning &&
+               ActiveGamePanel._isPlayerTurn &&
+               !ActiveGamePanel._isShowingSequence;
+    }
+
+    private void Awake()
+    {
+        InitializeButtons();
+    }
+
+    private void OnEnable()
+    {
+        InitializeButtons();
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        StopInputTimer();
+        _isGameRunning = false;
+        _isShowingSequence = false;
+        _isPlayerTurn = false;
+
+        if (ActiveGamePanel == this)
+            ActiveGamePanel = null;
     }
 
     public void StartGame()
     {
-        _currentStep = 0;
-        _isPlayingSequence = true;
+        if (!EnsureButtonsReady())
+        {
+            Debug.LogWarning("[MemoryPanel] No buttons configured.", this);
+            return;
+        }
+
+        StopAllCoroutines();
+        StopInputTimer();
+        ResetButtonsToNormal();
+
+        _isGameRunning = true;
+        _isShowingSequence = false;
         _isPlayerTurn = false;
-        StartCoroutine(PlaySequenceCoroutine());
-    }
+        _currentInputIndex = 0;
+        ActiveGamePanel = this;
 
-    private IEnumerator PlaySequenceCoroutine()
-    {
-        // Пауза перед началом
-        yield return new WaitForSeconds(0.5f);
-
-        // Показываем последовательность
-        for (int i = 0; i < _sequence.Count; i++)
-        {
-            yield return new WaitForSeconds(0.3f);
-            ActivateButton(_sequence[i]);
-        }
-
-        _isPlayingSequence = false;
-        _isPlayerTurn = true;
-        StartInputTimer();
-    }
-
-    private void ActivateButton(int index)
-    {
-        if (index >= 0 && index < buttons.Length)
-        {
-            buttons[index].Activate();
-            PlayButtonSound(index);
-        }
-    }
-
-    public void OnButtonPressed(int index)
-    {
-        if (!_isPlayerTurn || _isPlayingSequence) return;
-
-        PlayButtonSound(index);
-
-        // Проверка правильности нажатия
-        if (index == _sequence[_currentStep])
-        {
-            _currentStep++;
-
-            // Последовательность завершена
-            if (_currentStep >= _sequence.Count)
-            {
-                CompleteGame();
-            }
-            else
-            {
-                // Сброс таймера ввода для следующего нажатия
-                RestartInputTimer();
-            }
-        }
-        else
-        {
-            FailGame();
-        }
-    }
-
-    private void StartInputTimer()
-    {
-        _inputTimerCoroutine = StartCoroutine(InputTimerCoroutine());
-    }
-
-    private void RestartInputTimer()
-    {
-        if (_inputTimerCoroutine != null)
-            StopCoroutine(_inputTimerCoroutine);
-        StartInputTimer();
-    }
-
-    private IEnumerator InputTimerCoroutine()
-    {
-        yield return new WaitForSeconds(inputWindowTime);
-        if (_isPlayerTurn)
-        {
-            FailGame();
-        }
-    }
-
-    private void CompleteGame()
-    {
-        _isPlayerTurn = false;
-        PlaySound(successClip);
-        onSuccess?.Invoke();
-        enabled = false; // Отключаем скрипт после победы
-    }
-
-    private void FailGame()
-    {
-        _isPlayerTurn = false;
-        PlaySound(failClip);
-        onFail?.Invoke();
-
-        // Перезапуск через паузу
-        StartCoroutine(RestartAfterDelay());
-    }
-
-    private IEnumerator RestartAfterDelay()
-    {
-        yield return new WaitForSeconds(1.5f);
-        ResetGame();
+        GenerateSequence();
+        _currentRoundLength = Mathf.Clamp(startRoundLength, 1, _sequence.Count);
+        StartCoroutine(PlayRoundCoroutine());
     }
 
     public void ResetGame()
     {
         StopAllCoroutines();
-        GenerateSequence();
-        _currentStep = 0;
-        _isPlayingSequence = false;
+        StopInputTimer();
+        _isGameRunning = false;
+        _isShowingSequence = false;
         _isPlayerTurn = false;
-        enabled = true;
+        _currentInputIndex = 0;
+        _currentRoundLength = 0;
+        
+        if (ActiveGamePanel == this)
+            ActiveGamePanel = null;
+
+        GenerateSequence();
+        ResetButtonsToNormal();
+    }
+
+    public bool TryInteractWithButton(MemoryButton button)
+    {
+        if (button == null || !button.IsOwnedBy(this))
+            return false;
+
+        if (!_isGameRunning || !_isPlayerTurn || _isShowingSequence)
+            return false;
+
+        OnButtonPressed(button.ButtonIndex);
+        return true;
+    }
+
+    public void OnButtonPressed(int index)
+    {
+        if (!_isGameRunning || !_isPlayerTurn || _isShowingSequence)
+            return;
+
+        if (index < 0 || index >= buttons.Length)
+            return;
+
+        ActivateButton(index, buttonDisplayTime * 0.6f);
+
+        if (index != _sequence[_currentInputIndex])
+        {
+            buttons[index].SetFail();
+            FailGame();
+            return;
+        }
+
+        _currentInputIndex++;
+
+        if (_currentInputIndex >= _currentRoundLength)
+        {
+            StopInputTimer();
+
+            if (_currentRoundLength >= _sequence.Count)
+            {
+                CompleteGame();
+                return;
+            }
+
+            _currentRoundLength++;
+            _isPlayerTurn = false;
+            StartCoroutine(NextRoundDelayCoroutine());
+            return;
+        }
+
+        RestartInputTimer();
+    }
+
+    private IEnumerator NextRoundDelayCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(0.6f);
+        yield return PlayRoundCoroutine();
+    }
+
+    private IEnumerator PlayRoundCoroutine()
+    {
+        _isShowingSequence = true;
+        _isPlayerTurn = false;
+        _currentInputIndex = 0;
+        StopInputTimer();
+
+        yield return new WaitForSecondsRealtime(initialShowDelay);
+
+        for (int i = 0; i < _currentRoundLength; i++)
+        {
+            ActivateButton(_sequence[i], buttonDisplayTime);
+            yield return new WaitForSecondsRealtime(buttonDisplayTime + pauseBetweenButtons);
+        }
+
+        _isShowingSequence = false;
+        _isPlayerTurn = true;
+        StartInputTimer();
+    }
+
+    private void CompleteGame()
+    {
+        if (!_isGameRunning)
+            return;
+
+        _isGameRunning = false;
+        _isShowingSequence = false;
+        _isPlayerTurn = false;
+        StopInputTimer();
+
+        for (int i = 0; i < buttons.Length; i++)
+            buttons[i].SetSuccess();
+
+        PlaySound(successClip);
+        onSuccess?.Invoke();
+        StartCoroutine(FinishSuccessCoroutine());
+    }
+
+    private IEnumerator FinishSuccessCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(0.8f);
+        ResetButtonsToNormal();
+
+        if (ActiveGamePanel == this)
+            ActiveGamePanel = null;
+    }
+
+    private void FailGame()
+    {
+        if (!_isGameRunning)
+            return;
+
+        _isGameRunning = false;
+        _isShowingSequence = false;
+        _isPlayerTurn = false;
+        StopInputTimer();
+
+        PlaySound(failClip);
+        onFail?.Invoke();
+
+        if (autoRestartOnFail)
+            StartCoroutine(RestartAfterDelayCoroutine());
+        else
+        {
+            if (ActiveGamePanel == this)
+                ActiveGamePanel = null;
+        }
+    }
+
+    private IEnumerator RestartAfterDelayCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(restartDelay);
+        StartGame();
+    }
+
+    private void StartInputTimer()
+    {
+        StopInputTimer();
+        _inputTimerCoroutine = StartCoroutine(InputTimerCoroutine());
+    }
+
+    private void RestartInputTimer()
+    {
+        StartInputTimer();
+    }
+
+    private void StopInputTimer()
+    {
+        if (_inputTimerCoroutine != null)
+        {
+            StopCoroutine(_inputTimerCoroutine);
+            _inputTimerCoroutine = null;
+        }
+    }
+
+    private IEnumerator InputTimerCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(inputWindowTime);
+
+        if (_isGameRunning && _isPlayerTurn)
+            FailGame();
+    }
+
+    private void ActivateButton(int index, float activeTime)
+    {
+        if (index < 0 || index >= buttons.Length)
+            return;
+
+        buttons[index].Activate(activeTime);
+        PlayButtonSound(index);
+    }
+
+    private bool EnsureButtonsReady()
+    {
+        if (buttons == null || buttons.Length == 0)
+            buttons = GetComponentsInChildren<MemoryButton>(true);
+
+        return buttons != null && buttons.Length > 0;
+    }
+
+    private void InitializeButtons()
+    {
+        if (!EnsureButtonsReady())
+            return;
+
+        for (int i = 0; i < buttons.Length; i++)
+            buttons[i].Initialize(this, i);
+    }
+
+    private void GenerateSequence()
+    {
+        if (!EnsureButtonsReady())
+            return;
+
+        _sequence.Clear();
+        int targetLength = Mathf.Max(1, sequenceLength);
+
+        for (int i = 0; i < targetLength; i++)
+            _sequence.Add(Random.Range(0, buttons.Length));
+    }
+
+    private void ResetButtonsToNormal()
+    {
+        if (buttons == null)
+            return;
+
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i] != null)
+                buttons[i].SetNormal();
+        }
     }
 
     private void PlayButtonSound(int index)
     {
-        if (audioSource != null && buttonClips != null && index < buttonClips.Length)
-        {
-            audioSource.PlayOneShot(buttonClips[index]);
-        }
+        if (audioSource == null || buttonClips == null || index >= buttonClips.Length)
+            return;
+
+        var clip = buttonClips[index];
+        if (clip != null)
+            audioSource.PlayOneShot(clip);
     }
 
     private void PlaySound(AudioClip clip)
     {
         if (audioSource != null && clip != null)
-        {
             audioSource.PlayOneShot(clip);
-        }
     }
 
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        sequenceLength = Mathf.Clamp(sequenceLength, 3, 8);
-        buttonDisplayTime = Mathf.Clamp(buttonDisplayTime, 0.5f, 2f);
+        sequenceLength = Mathf.Clamp(sequenceLength, 3, 12);
+        startRoundLength = Mathf.Clamp(startRoundLength, 1, sequenceLength);
+        initialShowDelay = Mathf.Max(0.05f, initialShowDelay);
+        buttonDisplayTime = Mathf.Max(0.05f, buttonDisplayTime);
+        pauseBetweenButtons = Mathf.Max(0f, pauseBetweenButtons);
+        inputWindowTime = Mathf.Max(0.2f, inputWindowTime);
+        restartDelay = Mathf.Max(0f, restartDelay);
     }
 #endif
 }

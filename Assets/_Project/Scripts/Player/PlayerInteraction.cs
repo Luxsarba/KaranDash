@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Взаимодействия игрока (предметы, NPC, триггеры).
+/// Player interactions (items, NPCs, triggers).
 /// </summary>
 public class PlayerInteraction : MonoBehaviour
 {
-    [Header("Параметры")]
+    [Header("Interaction")]
     [SerializeField] private float interactRange = 2f;
 
-    [Header("Ссылки")]
+    [Header("References")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private PlayerPause playerPause;
     [SerializeField] private PlayerInventory inventory;
@@ -16,8 +16,25 @@ public class PlayerInteraction : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMPro.TextMeshProUGUI ammoText;
 
+    private Player _player;
+
+    private void Awake()
+    {
+        ResolveReferences();
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+            ResolveReferences();
+    }
+#endif
+
     private void OnTriggerEnter(Collider other)
     {
+        ResolveReferences();
+
         switch (other.tag)
         {
             case "AmmoCrate":
@@ -39,6 +56,8 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        ResolveReferences();
+
         switch (other.tag)
         {
             case "MedKit":
@@ -56,36 +75,64 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) &&
-            playerPause != null && !playerPause.IsPaused &&
-            !GameManager.isPlayerInputBlocked)
-        {
-            HandleInteraction();
-        }
+        if (!Input.GetKeyDown(KeyCode.E))
+            return;
+
+        ResolveReferences();
+
+        bool allowMemoryInteraction = MemoryPanel.IsInteractionInputAllowed();
+
+        if (GameManager.isPlayerInputBlocked && !allowMemoryInteraction)
+            return;
+
+        if (playerPause != null && playerPause.IsPaused && !allowMemoryInteraction)
+            return;
+
+        HandleInteraction();
     }
 
     private void HandleInteraction()
     {
+        if (playerCamera == null)
+            return;
+
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        
-        if (RaycastService.TryRaycast(ray, out RaycastHit hit, interactRange))
+        bool memoryGameRunning = MemoryPanel.IsAnyGameRunning();
+        float maxDistance = interactRange;
+
+        if (!RaycastService.TryRaycast(ray, out RaycastHit hit, maxDistance))
+            return;
+
+        float distanceToHit = Vector3.Distance(hit.point, transform.position);
+
+        if (memoryGameRunning)
         {
-            if (Vector3.Distance(hit.point, transform.position) >= interactRange)
+            if (distanceToHit > interactRange)
                 return;
 
-            if (RaycastService.TryGetComponentInParents(hit, out SaveStation _))
-                HandleSaveStation(hit);
-            else if (RaycastService.TryGetComponentInParents(hit, out QuestItemPickup _))
-                HandleQuestItem(hit);
-            else if (RaycastService.TryGetComponentInParents(hit, out DialogueTrigger _))
-                HandleDialogNPC(hit);
-            else if (RaycastService.TryGetComponentInParents(hit, out FetchQuestNPC _))
-                HandleQuestNPC(hit);
-            else if (RaycastService.HitHasTag(hit, "Radio"))
-                HandleRadio(hit);
-            else if (RaycastService.TryGetComponentInParents(hit, out MemoryGameTrigger _))
-                HandleMemoryGame(hit);
+            if (RaycastService.TryGetComponentInParents(hit, out MemoryButton memoryButton))
+                HandleMemoryButton(memoryButton);
+
+            return;
         }
+
+        if (distanceToHit > interactRange)
+            return;
+
+        if (RaycastService.TryGetComponentInParents(hit, out SaveStation _))
+            HandleSaveStation(hit);
+        else if (RaycastService.TryGetComponentInParents(hit, out PianoKey pianoKey))
+            HandlePianoKey(pianoKey);
+        else if (RaycastService.TryGetComponentInParents(hit, out QuestItemPickup _))
+            HandleQuestItem(hit);
+        else if (RaycastService.TryGetComponentInParents(hit, out DialogueTrigger _))
+            HandleDialogNPC(hit);
+        else if (RaycastService.TryGetComponentInParents(hit, out FetchQuestNPC _))
+            HandleQuestNPC(hit);
+        else if (RaycastService.HitHasTag(hit, "Radio"))
+            HandleRadio(hit);
+        else if (RaycastService.TryGetComponentInParents(hit, out MemoryGameTrigger _))
+            HandleMemoryGame(hit);
     }
 
     private void HandleAmmoCrate()
@@ -101,11 +148,7 @@ public class PlayerInteraction : MonoBehaviour
     private void HandleMedKit(Collider other)
     {
         if (Input.GetKey(KeyCode.E))
-        {
-            // TODO: добавить флаг hasMedkits в PlayerHealth или отдельный компонент
             other.transform.GetChild(1).gameObject.SetActive(false);
-            // medkits += 3; // TODO: реализовать систему аптечек
-        }
     }
 
     private void HandleUpWind(Collider other)
@@ -129,30 +172,27 @@ public class PlayerInteraction : MonoBehaviour
     {
         var station = hit.collider.GetComponentInParent<SaveStation>();
         if (station != null)
-        {
-            Debug.Log("Сработалооооо");
             station.SaveHere(GetComponent<Player>());
-        }
     }
 
     private void HandleQuestItem(RaycastHit hit)
     {
         var pickup = hit.collider.GetComponentInParent<QuestItemPickup>();
-        if (pickup && inventory)
-            pickup.Pickup(inventory);
+        pickup?.TryPickup(inventory);
     }
 
     private void HandleDialogNPC(RaycastHit hit)
     {
         var trigger = hit.collider.GetComponentInParent<DialogueTrigger>();
-        trigger?.TriggerDialogue();
+        trigger?.TryTriggerDialogue();
     }
 
     private void HandleQuestNPC(RaycastHit hit)
     {
         var npc = hit.collider.GetComponentInParent<FetchQuestNPC>();
-        if (npc && inventory)
-            npc.Interact(inventory);
+        var resolvedInventory = inventory != null ? inventory : GetComponent<PlayerInventory>();
+        if (npc && resolvedInventory)
+            npc.Interact(resolvedInventory);
     }
 
     private void HandleRadio(RaycastHit hit)
@@ -171,5 +211,38 @@ public class PlayerInteraction : MonoBehaviour
     {
         var trigger = hit.collider.GetComponentInParent<MemoryGameTrigger>();
         trigger?.TriggerGame();
+    }
+
+    private void HandleMemoryButton(MemoryButton button)
+    {
+        button?.TryPressFromInteraction();
+    }
+
+    private void HandlePianoKey(PianoKey key)
+    {
+        key?.TryPressFromInteraction();
+    }
+
+    private void ResolveReferences()
+    {
+        if (_player == null)
+            _player = GetComponent<Player>();
+
+        if (playerPause == null)
+            playerPause = GetComponent<PlayerPause>();
+
+        if (inventory == null)
+            inventory = GetComponent<PlayerInventory>();
+
+        if (playerCamera == null)
+        {
+            if (_player != null && _player.playerCamera != null)
+                playerCamera = _player.playerCamera;
+            else
+                playerCamera = GetComponentInChildren<Camera>(true);
+        }
+
+        if (ammoText == null && _player != null)
+            ammoText = _player.ammoText;
     }
 }

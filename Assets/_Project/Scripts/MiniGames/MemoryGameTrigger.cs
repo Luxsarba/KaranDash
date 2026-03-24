@@ -1,31 +1,51 @@
 using UnityEngine;
 
 /// <summary>
-/// Триггер для запуска мини-игры Мемори.
-/// Навешивается на объект с тегом "MemoryGame".
+/// Trigger entry point for the memory mini-game.
 /// </summary>
 public class MemoryGameTrigger : MonoBehaviour
 {
-    [Header("Ссылка на панель мини-игры")]
+    [Header("References")]
     [SerializeField] private MemoryPanel memoryPanel;
 
-    private void Start()
+    private void Awake()
     {
-        if (memoryPanel == null)
-        {
-            memoryPanel = GetComponentInParent<MemoryPanel>();
-        }
+        TryResolvePanel();
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+            TryResolvePanel();
+    }
+#endif
 
     public void TriggerGame()
     {
+        if (!TryResolvePanel())
+        {
+            Debug.LogWarning("[MemoryGameTrigger] MemoryPanel was not found.", this);
+            return;
+        }
+
+        memoryPanel.StartGame();
+    }
+
+    private bool TryResolvePanel()
+    {
         if (memoryPanel != null)
-        {
-            memoryPanel.StartGame();
-        }
-        else
-        {
-            Debug.LogWarning("MemoryPanel не найден!");
-        }
+            return true;
+
+        memoryPanel = GetComponentInParent<MemoryPanel>(true);
+        if (memoryPanel != null)
+            return true;
+
+        memoryPanel = GetComponentInChildren<MemoryPanel>(true);
+        if (memoryPanel != null)
+            return true;
+
+        memoryPanel = FindObjectOfType<MemoryPanel>(true);
+        return memoryPanel != null;
     }
 }

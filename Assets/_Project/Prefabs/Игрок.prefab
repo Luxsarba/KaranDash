@@ -592,7 +592,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1226365609281487604}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: a3b3cdd1f4e23cb449c2a296dca5794e, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -726,9 +726,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactRange: 2
+  memoryInteractRange: 8
   playerCamera: {fileID: 7791467893214472417}
   playerPause: {fileID: 261352781662551812}
-  inventory: {fileID: 0}
+  inventory: {fileID: 4064195320614985229}
   ammoText: {fileID: 6401321315051871617}
 --- !u!114 &9122665473962995896
 MonoBehaviour:

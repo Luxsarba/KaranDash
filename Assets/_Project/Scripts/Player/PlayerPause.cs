@@ -35,6 +35,9 @@ public class PlayerPause : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (IsDialogueOpen())
+                return;
+
             TogglePause();
         }
     }
@@ -63,6 +66,21 @@ public class PlayerPause : MonoBehaviour
 
     public void Continue()
     {
+        if (IsDialogueOpen())
+        {
+            paused = true;
+            Time.timeScale = 0;
+
+            if (playerUI != null)
+                playerUI.SetActive(false);
+            if (pauseScreen != null)
+                pauseScreen.SetActive(true);
+
+            GameManager.DisablePlayerInput();
+            ShowCursor();
+            return;
+        }
+
         paused = false;
         Time.timeScale = 1;
         
@@ -114,6 +132,11 @@ public class PlayerPause : MonoBehaviour
     }
 
     public bool GetPaused() => paused;
+
+    private static bool IsDialogueOpen()
+    {
+        return DialogueManager.Instance != null && DialogueManager.Instance.IsOpen;
+    }
 
     /// <summary>
     /// Сброс Time.timeScale при уничтожении (защита от утечки).

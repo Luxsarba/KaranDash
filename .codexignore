@@ -1,0 +1,25 @@
+﻿# Keep Codex indexing focused on source and gameplay logic
+Library/
+Temp/
+Logs/
+obj/
+Build/
+Builds/
+UserSettings/
+
+# Large binary-heavy asset zones (still in repo, but not needed for most coding tasks)
+Assets/_ThirdParty/**
+Assets/_Project/2D/**
+Assets/_Project/3D/**
+Assets/_Project/Sounds/**
+Assets/**/Unity.VisualScripting.Generated/**
+
+# Large binary formats
+*.rar
+*.hdr
+*.exr
+*.tga
+*.fbx
+*.wav
+*.flac
+*.mp4
