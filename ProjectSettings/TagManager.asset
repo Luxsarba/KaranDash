@@ -18,6 +18,7 @@ TagManager:
   - QuestNPC
   - QuestItem
   - SaveStation
+  - GrapplePoint
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - Player
   - Location
   - Enemy
-  - 
+  - Grapple
   - 
   - 
   - 
