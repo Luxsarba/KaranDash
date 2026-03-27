@@ -6,6 +6,9 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 public class MemoryButton : MonoBehaviour
 {
+    private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
+    private static readonly int BaseColorPropertyId = Shader.PropertyToID("_BaseColor");
+
     [Header("Colors")]
     [SerializeField] private Color normalColor = new Color(0.3f, 0.3f, 0.3f);
     [SerializeField] private Color activeColor = Color.white;
@@ -21,15 +24,14 @@ public class MemoryButton : MonoBehaviour
     private MemoryPanel _panel;
     private int _index;
     private Renderer _renderer;
+    private MaterialPropertyBlock _propertyBlock;
     private bool _isInitialized;
 
     public int ButtonIndex => _index;
 
     private void Awake()
     {
-        _renderer = GetComponent<Renderer>();
-        if (_renderer == null)
-            _renderer = GetComponentInChildren<Renderer>();
+        EnsureRenderer();
 
         if (buttonLight == null)
             buttonLight = GetComponentInChildren<Light>();
@@ -127,8 +129,26 @@ public class MemoryButton : MonoBehaviour
 
     private void SetColor(Color color)
     {
-        if (_renderer != null)
-            _renderer.material.color = color;
+        EnsureRenderer();
+        if (_renderer == null)
+            return;
+
+        if (_propertyBlock == null)
+            _propertyBlock = new MaterialPropertyBlock();
+
+        _renderer.GetPropertyBlock(_propertyBlock);
+        _propertyBlock.SetColor(ColorPropertyId, color);
+        _propertyBlock.SetColor(BaseColorPropertyId, color);
+        _renderer.SetPropertyBlock(_propertyBlock);
+    }
+
+    private void EnsureRenderer()
+    {
+        if (_renderer == null)
+            _renderer = GetComponent<Renderer>();
+
+        if (_renderer == null)
+            _renderer = GetComponentInChildren<Renderer>();
     }
 
     private void OnMouseDown()

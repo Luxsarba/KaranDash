@@ -31,17 +31,14 @@ public class PianoKey : MonoBehaviour
     private const int GeneratedToneSampleRate = 44100;
     private static readonly Dictionary<string, AudioClip> GeneratedToneCache = new Dictionary<string, AudioClip>();
     private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
+    private static readonly int BaseColorPropertyId = Shader.PropertyToID("_BaseColor");
     private MaterialPropertyBlock _propertyBlock;
 
     public string NormalizedNoteId => _normalizedNoteId;
 
     private void Awake()
     {
-        if (targetRenderer == null)
-            targetRenderer = GetComponent<Renderer>();
-
-        if (targetRenderer == null)
-            targetRenderer = GetComponentInChildren<Renderer>();
+        EnsureRenderer();
 
         EnsureAudioSource();
 
@@ -193,6 +190,7 @@ public class PianoKey : MonoBehaviour
 
     private void SetColor(Color color)
     {
+        EnsureRenderer();
         if (targetRenderer == null)
             return;
 
@@ -201,7 +199,17 @@ public class PianoKey : MonoBehaviour
 
         targetRenderer.GetPropertyBlock(_propertyBlock);
         _propertyBlock.SetColor(ColorPropertyId, color);
+        _propertyBlock.SetColor(BaseColorPropertyId, color);
         targetRenderer.SetPropertyBlock(_propertyBlock);
+    }
+
+    private void EnsureRenderer()
+    {
+        if (targetRenderer == null)
+            targetRenderer = GetComponent<Renderer>();
+
+        if (targetRenderer == null)
+            targetRenderer = GetComponentInChildren<Renderer>();
     }
 
     private void NormalizeNote()
@@ -228,9 +236,7 @@ public class PianoKey : MonoBehaviour
     private void OnValidate()
     {
         NormalizeNote();
-
-        if (targetRenderer == null)
-            targetRenderer = GetComponent<Renderer>();
+        EnsureRenderer();
     }
 #endif
 }

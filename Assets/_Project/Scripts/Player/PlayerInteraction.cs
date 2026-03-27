@@ -123,6 +123,8 @@ public class PlayerInteraction : MonoBehaviour
             HandleSaveStation(hit);
         else if (RaycastService.TryGetComponentInParents(hit, out PianoKey pianoKey))
             HandlePianoKey(pianoKey);
+        else if (RaycastService.TryGetComponentInParents(hit, out FifteenPuzzleTile puzzleTile))
+            HandleFifteenPuzzleTile(puzzleTile);
         else if (RaycastService.TryGetComponentInParents(hit, out QuestItemPickup _))
             HandleQuestItem(hit);
         else if (RaycastService.TryGetComponentInParents(hit, out DialogueTrigger _))
@@ -221,6 +223,11 @@ public class PlayerInteraction : MonoBehaviour
     private void HandlePianoKey(PianoKey key)
     {
         key?.TryPressFromInteraction();
+    }
+
+    private void HandleFifteenPuzzleTile(FifteenPuzzleTile tile)
+    {
+        tile?.TryPressFromInteraction();
     }
 
     private void ResolveReferences()

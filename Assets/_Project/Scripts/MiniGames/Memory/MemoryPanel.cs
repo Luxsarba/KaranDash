@@ -8,6 +8,9 @@ using UnityEngine.Events;
 /// </summary>
 public class MemoryPanel : MonoBehaviour
 {
+    private const float NextRoundDelay = 0.6f;
+    private const float SuccessResetDelay = 0.8f;
+
     public static MemoryPanel ActiveGamePanel { get; private set; }
 
     [Header("Game")]
@@ -67,12 +70,7 @@ public class MemoryPanel : MonoBehaviour
     {
         StopAllCoroutines();
         StopInputTimer();
-        _isGameRunning = false;
-        _isShowingSequence = false;
-        _isPlayerTurn = false;
-
-        if (ActiveGamePanel == this)
-            ActiveGamePanel = null;
+        SetInactiveState(clearRoundLength: true);
     }
 
     public void StartGame()
@@ -102,14 +100,7 @@ public class MemoryPanel : MonoBehaviour
     {
         StopAllCoroutines();
         StopInputTimer();
-        _isGameRunning = false;
-        _isShowingSequence = false;
-        _isPlayerTurn = false;
-        _currentInputIndex = 0;
-        _currentRoundLength = 0;
-        
-        if (ActiveGamePanel == this)
-            ActiveGamePanel = null;
+        SetInactiveState(clearRoundLength: true);
 
         GenerateSequence();
         ResetButtonsToNormal();
@@ -139,7 +130,8 @@ public class MemoryPanel : MonoBehaviour
 
         if (index != _sequence[_currentInputIndex])
         {
-            buttons[index].SetFail();
+            if (buttons[index] != null)
+                buttons[index].SetFail();
             FailGame();
             return;
         }
@@ -167,7 +159,7 @@ public class MemoryPanel : MonoBehaviour
 
     private IEnumerator NextRoundDelayCoroutine()
     {
-        yield return new WaitForSecondsRealtime(0.6f);
+        yield return new WaitForSecondsRealtime(NextRoundDelay);
         yield return PlayRoundCoroutine();
     }
 
@@ -202,7 +194,10 @@ public class MemoryPanel : MonoBehaviour
         StopInputTimer();
 
         for (int i = 0; i < buttons.Length; i++)
-            buttons[i].SetSuccess();
+        {
+            if (buttons[i] != null)
+                buttons[i].SetSuccess();
+        }
 
         PlaySound(successClip);
         onSuccess?.Invoke();
@@ -211,11 +206,9 @@ public class MemoryPanel : MonoBehaviour
 
     private IEnumerator FinishSuccessCoroutine()
     {
-        yield return new WaitForSecondsRealtime(0.8f);
+        yield return new WaitForSecondsRealtime(SuccessResetDelay);
         ResetButtonsToNormal();
-
-        if (ActiveGamePanel == this)
-            ActiveGamePanel = null;
+        ClearActiveGameIfSelf();
     }
 
     private void FailGame()
@@ -234,10 +227,7 @@ public class MemoryPanel : MonoBehaviour
         if (autoRestartOnFail)
             StartCoroutine(RestartAfterDelayCoroutine());
         else
-        {
-            if (ActiveGamePanel == this)
-                ActiveGamePanel = null;
-        }
+            ClearActiveGameIfSelf();
     }
 
     private IEnumerator RestartAfterDelayCoroutine()
@@ -338,6 +328,25 @@ public class MemoryPanel : MonoBehaviour
     {
         if (audioSource != null && clip != null)
             audioSource.PlayOneShot(clip);
+    }
+
+    private void SetInactiveState(bool clearRoundLength)
+    {
+        _isGameRunning = false;
+        _isShowingSequence = false;
+        _isPlayerTurn = false;
+        _currentInputIndex = 0;
+
+        if (clearRoundLength)
+            _currentRoundLength = 0;
+
+        ClearActiveGameIfSelf();
+    }
+
+    private void ClearActiveGameIfSelf()
+    {
+        if (ActiveGamePanel == this)
+            ActiveGamePanel = null;
     }
 
 #if UNITY_EDITOR

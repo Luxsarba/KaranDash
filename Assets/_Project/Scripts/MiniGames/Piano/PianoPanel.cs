@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 /// <summary>
 /// Piano puzzle panel: keys are always playable and a configured melody triggers success.
 /// </summary>
 public class PianoPanel : MonoBehaviour
 {
+    private static readonly char[] MelodySeparators = { ' ', '\t', '\r', '\n', ',', ';' };
+
     [Header("Melody")]
     [Tooltip("Expected sequence, e.g. C4 D#4 A5 Bb4")]
     [SerializeField] private string melodySequence = "C4 D4 E4";
@@ -17,27 +20,19 @@ public class PianoPanel : MonoBehaviour
     [Header("Events")]
     [SerializeField] private UnityEvent onSuccess;
 
-    [Header("Success Audio")]
-    [SerializeField] private AudioSource successAudioSource;
-    [SerializeField] private AudioClip successMelodyClip;
-    [SerializeField, Range(0f, 1f)] private float successMelodyVolume = 1f;
-
     private readonly List<string> _expectedNotes = new List<string>();
     private int _progressIndex;
     private bool _hasValidMelody;
+    public event Action Success;
 
     private void Awake()
     {
-        ResolveSuccessAudioSource();
-        InitializeKeys();
-        RebuildMelodyCache();
+        InitializePanel();
     }
 
     private void OnEnable()
     {
-        ResolveSuccessAudioSource();
-        InitializeKeys();
-        RebuildMelodyCache();
+        InitializePanel();
     }
 
     public void StartGame()
@@ -48,7 +43,6 @@ public class PianoPanel : MonoBehaviour
     public void ResetGame()
     {
         _progressIndex = 0;
-        ApplyKeyMarks();
     }
 
     public bool TryInteractWithKey(PianoKey key)
@@ -73,8 +67,7 @@ public class PianoPanel : MonoBehaviour
             if (_progressIndex >= _expectedNotes.Count)
             {
                 _progressIndex = 0;
-                PlaySuccessMelody();
-                onSuccess?.Invoke();
+                HandleSuccess();
             }
 
             return true;
@@ -89,9 +82,16 @@ public class PianoPanel : MonoBehaviour
         _progressIndex = 0;
     }
 
+    private void InitializePanel()
+    {
+        InitializeKeys();
+        RebuildMelodyCache();
+    }
+
     private void InitializeKeys()
     {
-        keys = GetComponentsInChildren<PianoKey>(true);
+        if (keys == null || keys.Length == 0)
+            keys = GetComponentsInChildren<PianoKey>(true);
 
         if (keys == null)
             return;
@@ -129,46 +129,14 @@ public class PianoPanel : MonoBehaviour
         if (!_hasValidMelody)
         {
             Debug.LogWarning($"[PianoPanel] Melody has invalid note format on '{name}'. Use format like C4 D#4 A5.", this);
-            ApplyKeyMarks();
             return;
         }
-
-        ApplyKeyMarks();
     }
 
-    private void PlaySuccessMelody()
+    private void HandleSuccess()
     {
-        if (successMelodyClip == null)
-            return;
-
-        ResolveSuccessAudioSource();
-        if (successAudioSource != null)
-            successAudioSource.PlayOneShot(successMelodyClip, successMelodyVolume);
-    }
-
-    private void ResolveSuccessAudioSource()
-    {
-        if (successAudioSource == null)
-            successAudioSource = GetComponent<AudioSource>();
-
-        if (successAudioSource == null && Application.isPlaying)
-        {
-            successAudioSource = gameObject.AddComponent<AudioSource>();
-        }
-
-        ConfigureSuccessAudioSource();
-    }
-
-    private void ConfigureSuccessAudioSource()
-    {
-        if (successAudioSource == null)
-            return;
-
-        successAudioSource.playOnAwake = false;
-        successAudioSource.spatialBlend = 0f;
-        successAudioSource.dopplerLevel = 0f;
-        successAudioSource.minDistance = 2f;
-        successAudioSource.maxDistance = 20f;
+        Success?.Invoke();
+        onSuccess?.Invoke();
     }
 
     private static bool TryParseMelody(string input, List<string> buffer)
@@ -178,7 +146,7 @@ public class PianoPanel : MonoBehaviour
         if (string.IsNullOrWhiteSpace(input))
             return false;
 
-        string[] tokens = input.Split(new[] { ' ', '\t', '\r', '\n', ',', ';' }, System.StringSplitOptions.RemoveEmptyEntries);
+        string[] tokens = input.Split(MelodySeparators, System.StringSplitOptions.RemoveEmptyEntries);
         if (tokens.Length == 0)
             return false;
 
