@@ -77,4 +77,13 @@ crashlytics-build.properties
 Build*.rar
 Assets/**/Unity.VisualScripting.Generated/**/UnitOptions.db
 .idea/
+/Exports/
+/Assets/_Project/Scripts/Editor.meta
+/Assets/_Project/Scripts/Editor/GameplayUpdatePackageExporter.cs
+/Assets/_Project/Scripts/Editor/GameplayUpdatePackageExporter.cs.meta
+/Assets/_Project/Scripts/Editor/LeverExampleSetup.cs
+/Assets/_Project/Scripts/Editor/LeverExampleSetup.cs.meta
+/Assets/_Project/Scripts/Editor/NoteSystemPrefabSync.cs
+/Assets/_Project/Scripts/Editor/NoteSystemPrefabSync.cs.meta
+/Assets/_ThirdParty/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
 

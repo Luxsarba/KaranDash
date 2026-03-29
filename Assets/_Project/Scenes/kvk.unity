@@ -7948,18 +7948,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8050238792574918432}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Quit
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &823768863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13837,13 +13837,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8050238792574918432}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Restart
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -15459,13 +15459,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8050238792574918432}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Restart
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -18199,13 +18199,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8050238792574918432}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Quit
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -20658,13 +20658,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3459472548338180482}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Quit
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -23526,6 +23526,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c069ffbf308567346bf319c5696a61a1, type: 3}
+--- !u!114 &2490032929365287330 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 261352781662551812, guid: c069ffbf308567346bf319c5696a61a1, type: 3}
+  m_PrefabInstance: {fileID: 2490032929365287329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c02af4a5d2ddbd4b897e9d07997327b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2492103418634791417
 Transform:
   m_ObjectHideFlags: 0
@@ -23627,13 +23638,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3459472548338180482}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Continue
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -24148,23 +24159,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1265965235778066679}
   m_Mesh: {fileID: 3683774850689308709, guid: 60c447cd362600d4a88ed481ec0aebc7, type: 3}
---- !u!1 &2824097687439930122
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2892254930499580558}
-  - component: {fileID: 3459472548338180482}
-  m_Layer: 0
-  m_Name: MenuManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1001 &2829745255349988748
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24334,21 +24328,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2997647439776770470}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &2892254930499580558
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2824097687439930122}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1250.7343, y: 661.3333, z: 1334.4756}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8823847779383988572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2895824913090821379
 GameObject:
@@ -24926,7 +24905,6 @@ GameObject:
   - component: {fileID: 2944801934833619506}
   - component: {fileID: 987219071052169154}
   - component: {fileID: 8050238792574918431}
-  - component: {fileID: 8050238792574918432}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -25679,20 +25657,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3459472548338180482
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2824097687439930122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2787575d40dcff04e8254c44d0638a27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _player: {fileID: 8906018772675244894}
-  storyScreen: {fileID: 1910981306579027126}
 --- !u!4 &3504266050230855700
 Transform:
   m_ObjectHideFlags: 0
@@ -26736,13 +26700,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3459472548338180482}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 2490032929365287330}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Continue
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -34080,20 +34044,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &8050238792574918432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3166869950721143533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2787575d40dcff04e8254c44d0638a27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _player: {fileID: 8906018772675244894}
-  storyScreen: {fileID: 1910981306579027126}
 --- !u!1 &8079391380573273759
 GameObject:
   m_ObjectHideFlags: 0
@@ -35048,7 +34998,6 @@ Transform:
   - {fileID: 8906018772675244902}
   - {fileID: 7611264502418755640}
   - {fileID: 311763146840159090}
-  - {fileID: 2892254930499580558}
   - {fileID: 5045648219799103102}
   - {fileID: 2997647439776770470}
   - {fileID: 3348355507593876334}
@@ -35115,11 +35064,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &8906018772675244894 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1226365609281487604, guid: c069ffbf308567346bf319c5696a61a1, type: 3}
-  m_PrefabInstance: {fileID: 2490032929365287329}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8906018772675244902 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2810248078494824919, guid: c069ffbf308567346bf319c5696a61a1, type: 3}

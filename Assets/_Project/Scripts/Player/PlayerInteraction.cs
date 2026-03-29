@@ -129,6 +129,10 @@ public class PlayerInteraction : MonoBehaviour
             HandleQuestItem(hit);
         else if (RaycastService.TryGetComponentInParents(hit, out DialogueTrigger _))
             HandleDialogNPC(hit);
+        else if (RaycastService.TryGetComponentInParents(hit, out NoteTrigger _))
+            HandleNote(hit);
+        else if (RaycastService.TryGetComponentInParents(hit, out LeverSwitch leverSwitch))
+            HandleLever(leverSwitch);
         else if (RaycastService.TryGetComponentInParents(hit, out FetchQuestNPC _))
             HandleQuestNPC(hit);
         else if (RaycastService.HitHasTag(hit, "Radio"))
@@ -187,6 +191,17 @@ public class PlayerInteraction : MonoBehaviour
     {
         var trigger = hit.collider.GetComponentInParent<DialogueTrigger>();
         trigger?.TryTriggerDialogue();
+    }
+
+    private void HandleNote(RaycastHit hit)
+    {
+        var trigger = hit.collider.GetComponentInParent<NoteTrigger>();
+        trigger?.TryTriggerNote();
+    }
+
+    private void HandleLever(LeverSwitch leverSwitch)
+    {
+        leverSwitch?.TryActivate();
     }
 
     private void HandleQuestNPC(RaycastHit hit)

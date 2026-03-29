@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Пауза, UI экраны и курсор.
@@ -35,7 +36,7 @@ public class PlayerPause : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (IsDialogueOpen())
+            if (IsOverlayOpen())
                 return;
 
             TogglePause();
@@ -66,7 +67,7 @@ public class PlayerPause : MonoBehaviour
 
     public void Continue()
     {
-        if (IsDialogueOpen())
+        if (IsOverlayOpen())
         {
             paused = true;
             Time.timeScale = 0;
@@ -119,6 +120,22 @@ public class PlayerPause : MonoBehaviour
         ShowCursor();
     }
 
+    public void Restart()
+    {
+        paused = false;
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Quit()
+    {
+        paused = false;
+        Time.timeScale = 1;
+        GameManager.DisablePlayerInput();
+        ShowCursor();
+        SceneManager.LoadScene("MenuScene");
+    }
+
     public void HideCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -133,9 +150,9 @@ public class PlayerPause : MonoBehaviour
 
     public bool GetPaused() => paused;
 
-    private static bool IsDialogueOpen()
+    private static bool IsOverlayOpen()
     {
-        return DialogueManager.Instance != null && DialogueManager.Instance.IsOpen;
+        return OverlayModalController.HasOpenOverlay;
     }
 
     /// <summary>

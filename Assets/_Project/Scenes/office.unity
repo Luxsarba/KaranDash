@@ -1049,6 +1049,22 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -128.69
       objectReference: {fileID: 0}
+    - target: {fileID: 4602815767688327341, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4602815767688327341, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 186347575}
+    - target: {fileID: 4602815767688327341, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerPause, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4602815767688327341, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4873627949368842998, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -1061,6 +1077,38 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6287668909990660694, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6287668909990660694, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 186347575}
+    - target: {fileID: 6287668909990660694, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerPause, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6287668909990660694, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6427629656473391684, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6427629656473391684, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 186347575}
+    - target: {fileID: 6427629656473391684, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerPause, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6427629656473391684, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6659224098253745108, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: jumpLimit
       value: 35
@@ -1068,6 +1116,22 @@ PrefabInstance:
     - target: {fileID: 6659224098253745108, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: coyoteTime
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963830295706949649, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963830295706949649, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 186347575}
+    - target: {fileID: 6963830295706949649, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerPause, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963830295706949649, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6987022434059767865, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: m_IsActive
@@ -1081,6 +1145,22 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 15.879
       objectReference: {fileID: 0}
+    - target: {fileID: 7692650935474401069, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7692650935474401069, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 186347575}
+    - target: {fileID: 7692650935474401069, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerPause, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7692650935474401069, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7775649300325520549, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1088,6 +1168,22 @@ PrefabInstance:
     - target: {fileID: 8026570073385315392, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8304327005296085549, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8304327005296085549, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 186347575}
+    - target: {fileID: 8304327005296085549, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerPause, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8304327005296085549, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8964135007585746473, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1184,6 +1280,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4356800461591442161, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
   m_PrefabInstance: {fileID: 186347573}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &186347575 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6583441890673609258, guid: ced7bbe1e2cbf834e853485704e1ae30, type: 3}
+  m_PrefabInstance: {fileID: 186347573}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c02af4a5d2ddbd4b897e9d07997327b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &189593658 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3332854660467360518, guid: bc01d1aa54431fb41bbfac5f98c8344c, type: 3}

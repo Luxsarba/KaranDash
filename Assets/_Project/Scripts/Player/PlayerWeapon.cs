@@ -106,7 +106,7 @@ public class PlayerWeapon : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (DialogueManager.IsFireInputBlockedByDialogue() ||
+        if (OverlayModalController.IsPrimaryActionBlocked() ||
             !Input.GetMouseButton(0) ||
             GameManager.isPlayerInputBlocked ||
             !_canShoot ||
@@ -130,7 +130,7 @@ public class PlayerWeapon : MonoBehaviour
 
 private void TryMeleeAttack()
     {
-        if (TryRaycastEnemy(out var hit, out _, shootDistance))
+        if (TryRaycastEnemy(out var hit, out _, meleeRange))
         {
             PerformPunch(hit);
         }

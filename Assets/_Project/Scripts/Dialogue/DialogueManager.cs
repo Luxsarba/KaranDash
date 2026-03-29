@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
-    public static bool BlockFireUntilMouseRelease { get; private set; }
 
     [Header("UI")]
     [SerializeField] private GameObject dialoguePanel;
@@ -32,17 +31,12 @@ public class DialogueManager : MonoBehaviour
     {
         dialoguePanel.SetActive(false);
         IsOpen = false;
-        BlockFireUntilMouseRelease = false;
     }
 
     public void StartDialogue(Dialogue dialogue)
     {
-        EnterDialogueMode();
-
         IsOpen = true;
-        BlockFireUntilMouseRelease = true;
-
-        dialoguePanel.SetActive(true);
+        OverlayModalController.Show(dialoguePanel);
 
         senderText.text = $"{dialogue.name} <{dialogue.email}@mail.com>";
 
@@ -81,26 +75,12 @@ public class DialogueManager : MonoBehaviour
             return;
 
         IsOpen = false;
-        BlockFireUntilMouseRelease = true;
-
-        dialoguePanel.SetActive(false);
-
-        ExitDialogueMode();
+        OverlayModalController.Hide(dialoguePanel);
     }
 
     public static bool IsFireInputBlockedByDialogue()
     {
-        if (Instance != null && Instance.IsOpen)
-            return true;
-
-        if (!BlockFireUntilMouseRelease)
-            return false;
-
-        if (Input.GetMouseButton(0))
-            return true;
-
-        BlockFireUntilMouseRelease = false;
-        return false;
+        return OverlayModalController.IsPrimaryActionBlocked();
     }
 
     private void Update()
@@ -115,49 +95,4 @@ public class DialogueManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             EndDialogue();
     }
-    private void EnterDialogueMode()
-    {
-        GameManager.DisablePlayerInput();
-
-        Time.timeScale = 0f;
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
-
-    private void ExitDialogueMode()
-    {
-        var pause = ResolvePlayerPause();
-        if (pause != null && pause.IsPaused)
-        {
-            GameManager.DisablePlayerInput();
-            Time.timeScale = 0f;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            return;
-        }
-
-        GameManager.EnablePlayerInput();
-        Time.timeScale = 1f;
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
-
-    private static PlayerPause ResolvePlayerPause()
-    {
-        if (GameManager.player != null)
-        {
-            var fromPlayer = GameManager.player.GetPause();
-            if (fromPlayer != null)
-                return fromPlayer;
-
-            fromPlayer = GameManager.player.GetComponent<PlayerPause>();
-            if (fromPlayer != null)
-                return fromPlayer;
-        }
-
-        return FindObjectOfType<PlayerPause>(true);
-    }
-
 }

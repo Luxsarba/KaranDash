@@ -6577,7 +6577,6 @@ Transform:
   - {fileID: 9222693365070823549}
   - {fileID: 1428604254866393139}
   - {fileID: 9088354564816415609}
-  - {fileID: 5931401461913430661}
   - {fileID: 6046646325470654893}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13599,13 +13598,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Restart
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -13786,13 +13785,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Continue
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -14551,11 +14550,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3565165160200373711}
   m_Mesh: {fileID: -6848348953978144262, guid: 60c447cd362600d4a88ed481ec0aebc7, type: 3}
---- !u!1 &5330426301359913822 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1226365609281487604, guid: c069ffbf308567346bf319c5696a61a1, type: 3}
-  m_PrefabInstance: {fileID: 6412448005828278698}
-  m_PrefabAsset: {fileID: 0}
 --- !u!33 &5330649638330328609
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -14564,20 +14558,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8687411684842350270}
   m_Mesh: {fileID: -2700266271243633276, guid: 60c447cd362600d4a88ed481ec0aebc7, type: 3}
---- !u!114 &5364151408351263113
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6720212180584786689}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2787575d40dcff04e8254c44d0638a27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _player: {fileID: 5330426301359913822}
-  storyScreen: {fileID: 6987022434647383229}
 --- !u!23 &5386860187396095009
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -15237,21 +15217,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5931401461913430661
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6720212180584786689}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1250.7343, y: 661.3333, z: 1334.4756}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2060969242315095}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &5932065266859124988
 Transform:
   m_ObjectHideFlags: 0
@@ -15991,13 +15956,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Quit
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -16445,6 +16410,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6338900943363439364}
   m_SourcePrefab: {fileID: 100100000, guid: c069ffbf308567346bf319c5696a61a1, type: 3}
+--- !u!114 &6412448005828278699 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 261352781662551812, guid: c069ffbf308567346bf319c5696a61a1, type: 3}
+  m_PrefabInstance: {fileID: 6412448005828278698}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c02af4a5d2ddbd4b897e9d07997327b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6427629656926199488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16489,13 +16465,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Continue
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -16939,23 +16915,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6857055083962660724}
   m_Mesh: {fileID: -1504038278612756401, guid: 60c447cd362600d4a88ed481ec0aebc7, type: 3}
---- !u!1 &6720212180584786689
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5931401461913430661}
-  - component: {fileID: 5364151408351263113}
-  m_Layer: 0
-  m_Name: MenuManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!33 &6724962500235764121
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -17237,13 +17196,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Quit
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -18410,13 +18369,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Quit
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -19229,13 +19188,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5364151408351263113}
-        m_TargetAssemblyTypeName: InGameMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 6412448005828278699}
+        m_TargetAssemblyTypeName: PlayerPause, Assembly-CSharp
         m_MethodName: Restart
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
