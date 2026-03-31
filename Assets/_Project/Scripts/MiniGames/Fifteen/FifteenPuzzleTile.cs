@@ -37,6 +37,7 @@ public class FifteenPuzzleTile : MonoBehaviour
     private Vector2 _sliceOffset = Vector2.zero;
     private Coroutine _moveCoroutine;
     private Collider _cachedCollider;
+    private bool _interactionEnabled = true;
 
     public int TileValue => tileValue;
     public Vector2Int SolvedCell => solvedCell;
@@ -102,15 +103,14 @@ public class FifteenPuzzleTile : MonoBehaviour
 
     public void SetInteractionEnabled(bool isEnabled)
     {
-        if (_cachedCollider == null)
-            _cachedCollider = GetComponent<Collider>();
-
-        if (_cachedCollider != null)
-            _cachedCollider.enabled = isEnabled;
+        _interactionEnabled = isEnabled;
     }
 
     public bool TryPressFromInteraction()
     {
+        if (!_interactionEnabled)
+            return false;
+
         Flash();
         return _panel != null && _panel.TryInteractWithTile(this);
     }

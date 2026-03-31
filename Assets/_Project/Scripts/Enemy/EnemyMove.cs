@@ -1,39 +1,64 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyMove : MonoBehaviour
 {
+    [SerializeField] private GameObject _look;
+    [SerializeField] private AnimationCurve curve;
+    [SerializeField] private float attackRange = 3.25f;
+    [SerializeField] private float maxAttackHeightDelta = 2.5f;
+    [SerializeField] private float chaseOffset = 1.5f;
+    [SerializeField] private float attackCooldown = 2f;
+
+    public int dmg = 5;
+
     private NavMeshAgent _agent;
     private Player _player;
     private Transform _playerTransform;
-    private bool attackReady = true, playerDetected = false;
-    private RaycastHit hit;
-    public int dmg = 5;
-    private Animator animator;
-    [SerializeField] private GameObject _look;
-    [SerializeField] private AnimationCurve curve;
-    [SerializeField] private bool debugDamageLogs = true;
-    private float _nextDebugLogTime;
-    private bool is_jumping = false;
-    private float initial_speed;
-    [SerializeField] private float attackRange = 3.25f;
-    [SerializeField] private float maxAttackHeightDelta = 2.5f;
+    private PlayerHealth _playerHealth;
+    private Animator _animator;
+    private bool _attackReady = true;
+    private bool _playerDetected;
+    private bool _isJumping;
+    private float _initialSpeed;
 
-    
-    void Start()
+    private void Awake()
     {
-        _agent = transform.GetComponent<NavMeshAgent>();
-        initial_speed = _agent ? _agent.speed : 0f;
-        animator = transform.GetComponentInChildren<Animator>();
+        _agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponentInChildren<Animator>();
+        _initialSpeed = _agent != null ? _agent.speed : 0f;
+    }
+
+    private void Update()
+    {
+        if (!TryResolvePlayer())
+            return;
+
+        HandleOffMeshLinkTraversal();
+        UpdateDetection();
+
+        if (!_playerDetected)
+            return;
+
+        if (IsPlayerInAttackRange())
+        {
+            FacePlayer();
+            StopAgent();
+            SetAnimatorState(2);
+            TryAttack();
+            return;
+        }
+
+        ChasePlayer();
+        SetAnimatorState(1);
     }
 
     private bool TryResolvePlayer()
     {
         if (GameManager.player != null)
         {
-            _player = GameManager.player;
-            _playerTransform = _player.transform;
+            AssignPlayer(GameManager.player);
             return true;
         }
 
@@ -44,126 +69,131 @@ public class EnemyMove : MonoBehaviour
             return false;
 
         GameManager.player = _player;
-        _playerTransform = _player.transform;
+        AssignPlayer(_player);
         return true;
+    }
+
+    private void AssignPlayer(Player player)
+    {
+        _player = player;
+        _playerTransform = player.transform;
+
+        if (_playerHealth == null || _playerHealth.gameObject != player.gameObject)
+            _playerHealth = player.GetComponent<PlayerHealth>();
+    }
+
+    private void UpdateDetection()
+    {
+        if (_look == null || _playerTransform == null)
+            return;
+
+        Ray visionRay = new Ray(_look.transform.position, _playerTransform.position - _look.transform.position);
+        if (RaycastService.TryRaycastForComponent(visionRay, out _, out Player _))
+            _playerDetected = true;
+    }
+
+    private void ChasePlayer()
+    {
+        if (_agent == null || !_agent.enabled)
+            return;
+
+        Vector3 directionToPlayer = (_playerTransform.position - transform.position).normalized;
+        Vector3 chaseDestination = _playerTransform.position - directionToPlayer * chaseOffset;
+        _agent.SetDestination(chaseDestination);
+    }
+
+    private void TryAttack()
+    {
+        if (!_attackReady)
+            return;
+
+        if (_playerHealth != null)
+            _playerHealth.TakeDamage(dmg, $"EnemyMove:{name}");
+        else
+            _player.Damage(dmg);
+
+        _attackReady = false;
+        Invoke(nameof(PrepareAttack), attackCooldown);
     }
 
     private void PrepareAttack()
     {
-        attackReady = true;
+        _attackReady = true;
     }
 
-    IEnumerator CurveLong(NavMeshAgent agent, float duration)
+    private void HandleOffMeshLinkTraversal()
+    {
+        if (_agent == null || !_agent.isOnOffMeshLink)
+            return;
+
+        if (_animator != null)
+            _animator.StopPlayback();
+
+        bool isJumpLink = _agent.nextOffMeshLinkData.linkType == OffMeshLinkType.LinkTypeManual ||
+                          _agent.nextOffMeshLinkData.linkType == OffMeshLinkType.LinkTypeJumpAcross;
+
+        if (!isJumpLink || _isJumping)
+            return;
+
+        if (_animator != null)
+            _animator.enabled = false;
+
+        _isJumping = true;
+
+        OffMeshLinkData data = _agent.currentOffMeshLinkData;
+        Vector3 startPos = _agent.transform.position;
+        Vector3 endPos = data.endPos + Vector3.up * _agent.baseOffset;
+        float distance = Vector3.Distance(startPos, endPos);
+        if (distance > 5f)
+            _agent.speed = 25f;
+
+        float duration = distance / Mathf.Max(_agent.speed, 0.01f);
+        StartCoroutine(CurveLong(_agent, duration));
+    }
+
+    private IEnumerator CurveLong(NavMeshAgent agent, float duration)
     {
         OffMeshLinkData data = agent.currentOffMeshLinkData;
         Vector3 startPos = agent.transform.position;
         Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
-        float normalizedTime = 0.0f;
-        while (normalizedTime < 1.0f)
+        float normalizedTime = 0f;
+
+        while (normalizedTime < 1f)
         {
             float yOffset = curve.Evaluate(normalizedTime);
             agent.transform.position = Vector3.Lerp(startPos, endPos, normalizedTime) + yOffset * 5f * Vector3.up;
-            normalizedTime += Time.deltaTime / duration;
-
+            normalizedTime += Time.deltaTime / Mathf.Max(duration, 0.01f);
             yield return null;
         }
-        animator.enabled = true;
-        is_jumping = false;
-        agent.speed = initial_speed;
+
+        if (_animator != null)
+            _animator.enabled = true;
+
+        _isJumping = false;
+        agent.speed = _initialSpeed;
     }
 
-    private void Update()
+    private void FacePlayer()
     {
-        if (!TryResolvePlayer())
+        if (_playerTransform == null)
             return;
 
-        if (debugDamageLogs && Time.time >= _nextDebugLogTime)
-        {
-            float hDist = HorizontalDistanceToPlayer();
-            float vDist = Mathf.Abs(_playerTransform.position.y - transform.position.y);
-            var health = _playerTransform.GetComponent<PlayerHealth>();
-            Debug.Log($"[EnemyMove] {name} tick: hDist={hDist:F2}, vDist={vDist:F2}, inRange={IsPlayerInAttackRange()}, playerDetected={playerDetected}, attackReady={attackReady}, hasPlayerHealth={health != null}", this);
-            _nextDebugLogTime = Time.time + 1f;
-        }
+        Vector3 lookTarget = new Vector3(_playerTransform.position.x, transform.position.y, _playerTransform.position.z);
+        transform.LookAt(lookTarget);
+    }
 
-        if (_agent && _agent.isOnOffMeshLink)
-        {
-            if (animator) animator.StopPlayback();
-            if ((_agent.nextOffMeshLinkData.linkType == OffMeshLinkType.LinkTypeManual || 
-                _agent.nextOffMeshLinkData.linkType == OffMeshLinkType.LinkTypeJumpAcross)
-                && !is_jumping)
-            {
-                if (animator) animator.enabled = false;
-                is_jumping = true;
-                
+    private void StopAgent()
+    {
+        if (_agent == null || !_agent.enabled)
+            return;
 
-                OffMeshLinkData data = _agent.currentOffMeshLinkData;
-                Vector3 startPos = _agent.transform.position;
-                Vector3 endPos = data.endPos + Vector3.up * _agent.baseOffset;
-                float distanse = Vector3.Distance(startPos, endPos);
-                if (distanse > 5f)
-                    _agent.speed = 25.0f;
-                float duration = distanse / _agent.speed;
+        _agent.ResetPath();
+    }
 
-                StartCoroutine(CurveLong(_agent, duration));
-            }
-
-        }
-         
-        if (_look &&
-            RaycastService.TryRaycastForComponent(
-                new Ray(_look.transform.position, _playerTransform.position - _look.transform.position),
-                out hit,
-                out Player _))
-        {
-            playerDetected = true;
-        }
-
-        if (playerDetected)
-        {
-            if (IsPlayerInAttackRange())
-            {
-                transform.LookAt(
-                    new Vector3(_playerTransform.position.x,
-                    transform.position.y,
-                    _playerTransform.position.z));
-                if (animator) animator.SetInteger("State", 2);
-            }
-            else
-            {
-                if (_agent)
-                {
-                    _agent.SetDestination(
-                        _playerTransform.position -
-                        (_playerTransform.position - transform.position).normalized * 1.5f);
-                }
-                if (animator) animator.SetInteger("State", 1);
-            }
-        }
-        
-        if (IsPlayerInAttackRange())
-        {
-            if (attackReady)
-            {
-                float distance = HorizontalDistanceToPlayer();
-                var health = _playerTransform.GetComponent<PlayerHealth>();
-                if (health != null)
-                {
-                    if (debugDamageLogs)
-                        Debug.Log($"[EnemyMove] {name} attack -> PlayerHealth.TakeDamage({dmg}), distance={distance:F2}", this);
-                    health.TakeDamage(dmg, $"EnemyMove:{name}");
-                }
-                else
-                {
-                    if (debugDamageLogs)
-                        Debug.LogWarning($"[EnemyMove] {name} attack fallback -> Player.Damage({dmg}), distance={distance:F2}", this);
-                    _player.Damage(dmg);
-                }
-
-                attackReady = false;
-                Invoke(nameof(PrepareAttack), 2f);
-            }
-        }
+    private void SetAnimatorState(int state)
+    {
+        if (_animator != null)
+            _animator.SetInteger("State", state);
     }
 
     private float HorizontalDistanceToPlayer()
@@ -175,6 +205,9 @@ public class EnemyMove : MonoBehaviour
 
     private bool IsPlayerInAttackRange()
     {
+        if (_playerTransform == null)
+            return false;
+
         float verticalDelta = Mathf.Abs(_playerTransform.position.y - transform.position.y);
         if (verticalDelta > maxAttackHeightDelta)
             return false;
@@ -182,11 +215,3 @@ public class EnemyMove : MonoBehaviour
         return HorizontalDistanceToPlayer() <= attackRange;
     }
 }
-
-    //private void Rotate()
-    //{
-    //    if (Vector3.Distance(transform.position, GameManager.player.transform.position) <= 2)
-    //    {
-    //        transform.LookAt(new Vector3(GameManager.player.transform.position.x, transform.position.y, GameManager.player.transform.position.z));
-    //    }
-    //}
