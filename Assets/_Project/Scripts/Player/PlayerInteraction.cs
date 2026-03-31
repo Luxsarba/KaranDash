@@ -119,6 +119,13 @@ public class PlayerInteraction : MonoBehaviour
         if (distanceToHit > interactRange)
             return;
 
+        PlayerInteractionContext interactionContext = CreateInteractionContext(hit);
+        if (RaycastService.TryGetInterfaceInParents(hit, out IPlayerInteractable interactable) &&
+            interactable.TryInteract(interactionContext))
+        {
+            return;
+        }
+
         if (RaycastService.TryGetComponentInParents(hit, out SaveStation _))
             HandleSaveStation(hit);
         else if (RaycastService.TryGetComponentInParents(hit, out PianoKey pianoKey))
@@ -243,6 +250,13 @@ public class PlayerInteraction : MonoBehaviour
     private void HandleFifteenPuzzleTile(FifteenPuzzleTile tile)
     {
         tile?.TryPressFromInteraction();
+    }
+
+    private PlayerInteractionContext CreateInteractionContext(RaycastHit hit)
+    {
+        PlayerInventory resolvedInventory = inventory != null ? inventory : GetComponent<PlayerInventory>();
+        Player resolvedPlayer = _player != null ? _player : GetComponent<Player>();
+        return new PlayerInteractionContext(this, resolvedPlayer, resolvedInventory, hit);
     }
 
     private void ResolveReferences()

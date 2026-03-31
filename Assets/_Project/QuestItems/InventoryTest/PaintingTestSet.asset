@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0743fb3593dd7d43a6a5a0bca84d8b8, type: 3}
+  m_Name: PaintingTestSet
+  m_EditorClassIdentifier: 
+  collectionId: painting_test_set
+  displayName: Painting Fragments
+  pieceCount: 6
+  pieces:
+  - {fileID: 11400000, guid: 0e47fbe33049c6447a4b76ab83a9801d, type: 2}
+  - {fileID: 11400000, guid: 4926a92a0b5215f46ac540cac3bd6c4d, type: 2}
+  - {fileID: 11400000, guid: 0e2773558ad45c44f8a818ea065662d3, type: 2}
+  - {fileID: 11400000, guid: 4c0715cb926ff0346bff05f509662633, type: 2}
+  - {fileID: 11400000, guid: c5f766bd801954b4ba1b0c5acfe10759, type: 2}
+  - {fileID: 11400000, guid: a554d316344ec9f488141ff3a17b4f18, type: 2}

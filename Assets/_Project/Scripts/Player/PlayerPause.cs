@@ -13,7 +13,7 @@ public class PlayerPause : MonoBehaviour
     [SerializeField] private GameObject loseScreen;
 
     [Header("Настройки")]
-    [SerializeField] private bool startPaused = true;
+    [SerializeField] private bool startPaused = false;
 
     private bool paused;
 

@@ -1,9 +1,15 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 [CreateAssetMenu(menuName = "Quests/Quest Item")]
-public class QuestItemData : ScriptableObject
+public class QuestItemData : InventoryItemData
 {
-    public string itemId;     // "pencil", "keycard_1"
-    public string displayName;// "Карандаш"
-    public Sprite icon;
+    private void Reset()
+    {
+        category = InventoryItemCategory.Quest;
+    }
+
+    private void OnValidate()
+    {
+        category = InventoryItemCategory.Quest;
+    }
 }

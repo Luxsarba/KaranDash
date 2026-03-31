@@ -83,6 +83,37 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &1053593169888478140
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2718429785952813903}
+  m_Layer: 0
+  m_Name: respawn point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2718429785952813903
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053593169888478140}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.189, z: 1.506}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5189108333282629088}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5784999002423472493
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,6 +254,7 @@ Transform:
   - {fileID: 6258373706032100238}
   - {fileID: 6812258689187318282}
   - {fileID: 3589443790784873785}
+  - {fileID: 2718429785952813903}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 169.627, z: 0}
 --- !u!65 &5855460441416320996
@@ -260,6 +292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stationId: station_1
   animPlayer: {fileID: 8149209463154129711}
+  respawnPoint: {fileID: 2718429785952813903}
 --- !u!114 &8983990936389989310
 MonoBehaviour:
   m_ObjectHideFlags: 0

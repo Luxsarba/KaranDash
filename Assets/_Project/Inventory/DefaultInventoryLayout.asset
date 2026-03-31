@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 736068326edbd6d479c24f77c4e9175f, type: 3}
+  m_Name: DefaultInventoryLayout
+  m_EditorClassIdentifier: 
+  paintingSet: {fileID: 11400000, guid: 7cb0d3a4c7d625e42b842527f73a417c, type: 2}
+  questHudSlots:
+  - item: {fileID: 0}
+    placeholderTitle: Quest 1
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Quest 2
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Quest 3
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Quest 4
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Quest 5
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Quest 6
+    placeholderIcon: {fileID: 0}
+  storyTabSlots:
+  - item: {fileID: 11400000, guid: 58c8bb55e61298e4c96103601955c9ba, type: 2}
+    placeholderTitle: Quest Pass
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Future Story Item
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Future Story Item
+    placeholderIcon: {fileID: 0}
+  - item: {fileID: 0}
+    placeholderTitle: Future Story Item
+    placeholderIcon: {fileID: 0}

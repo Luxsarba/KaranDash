@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d0487870415404f9882879da0cbc33, type: 3}
   m_Name: Skoth
   m_EditorClassIdentifier: 
-  itemId: 
-  displayName: 
+  itemId: Skoth
+  displayName: "\u0418\u0437\u043e\u043b\u0435\u043d\u0442\u0430"
   icon: {fileID: 0}
+  category: 1

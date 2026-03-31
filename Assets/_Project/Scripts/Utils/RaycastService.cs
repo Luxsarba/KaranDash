@@ -101,6 +101,32 @@ public static class RaycastService
     }
 
     /// <summary>
+    /// Поиск интерфейса T на объекте попадания или в его родителях.
+    /// </summary>
+    public static bool TryGetInterfaceInParents<T>(RaycastHit hit, out T interactable) where T : class
+    {
+        Transform current = hit.collider ? hit.collider.transform : hit.transform;
+
+        while (current != null)
+        {
+            Component[] components = current.GetComponents<Component>();
+            for (int i = 0; i < components.Length; i++)
+            {
+                if (components[i] is T typed)
+                {
+                    interactable = typed;
+                    return true;
+                }
+            }
+
+            current = current.parent;
+        }
+
+        interactable = null;
+        return false;
+    }
+
+    /// <summary>
     /// Рейкаст с поиском компонента типа T на попадании (включая родителей).
     /// </summary>
     public static bool TryRaycastForComponent<T>(Ray ray, out RaycastHit hit, out T component,

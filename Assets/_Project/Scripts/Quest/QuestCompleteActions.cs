@@ -1,19 +1,39 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 public class QuestCompleteActions : MonoBehaviour
 {
-    [Header("Что включить после квеста")]
+    [Header("Р§С‚Рѕ РІС‹РґР°С‚СЊ РІ РёРЅРІРµРЅС‚Р°СЂСЊ РїРѕСЃР»Рµ РєРІРµСЃС‚Р°")]
+    [SerializeField] private InventoryItemData[] rewardItems;
+
+    [Header("Р§С‚Рѕ РІРєР»СЋС‡РёС‚СЊ РїРѕСЃР»Рµ РєРІРµСЃС‚Р°")]
     [SerializeField] private GameObject[] enableObjects;
 
-    [Header("Что выключить после квеста")]
+    [Header("Р§С‚Рѕ РІС‹РєР»СЋС‡РёС‚СЊ РїРѕСЃР»Рµ РєРІРµСЃС‚Р°")]
     [SerializeField] private GameObject[] disableObjects;
 
-    [Header("Что заспавнить после квеста")]
+    [Header("Р§С‚Рѕ Р·Р°СЃРїР°РІРЅРёС‚СЊ РїРѕСЃР»Рµ РєРІРµСЃС‚Р°")]
     [SerializeField] private GameObject[] spawnPrefabs;
     [SerializeField] private Transform[] spawnPoints;
+    private bool persistentWorldStateApplied;
 
     public void Run()
     {
+        Run(null);
+    }
+
+    public void Run(PlayerInventory inventory)
+    {
+        GrantRewardItems(inventory);
+        ApplyPersistentState();
+    }
+
+    public void ApplyPersistentState()
+    {
+        if (persistentWorldStateApplied)
+            return;
+
+        persistentWorldStateApplied = true;
+
         if (enableObjects != null)
             foreach (var go in enableObjects)
                 if (go) go.SetActive(true);
@@ -41,5 +61,40 @@ public class QuestCompleteActions : MonoBehaviour
                 Instantiate(prefab, pos, rot);
             }
         }
+    }
+
+    private void GrantRewardItems(PlayerInventory inventory)
+    {
+        if (rewardItems == null || rewardItems.Length == 0)
+            return;
+
+        PlayerInventory resolvedInventory = inventory != null ? inventory : ResolveInventory();
+        if (resolvedInventory == null)
+        {
+            Debug.LogWarning("[QuestCompleteActions] Reward items were configured, but PlayerInventory was not found.", this);
+            return;
+        }
+
+        for (int i = 0; i < rewardItems.Length; i++)
+        {
+            InventoryItemData rewardItem = rewardItems[i];
+            if (rewardItem != null)
+                resolvedInventory.TryAdd(rewardItem);
+        }
+    }
+
+    private PlayerInventory ResolveInventory()
+    {
+        if (GameManager.inventory != null)
+            return GameManager.inventory;
+
+        if (GameManager.player != null)
+        {
+            PlayerInventory fromPlayer = GameManager.player.GetInventory();
+            if (fromPlayer != null)
+                return fromPlayer;
+        }
+
+        return FindObjectOfType<PlayerInventory>();
     }
 }
