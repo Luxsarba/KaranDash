@@ -20,6 +20,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float enemyContactCooldown = 1f;
     [SerializeField] private bool debugDamageLogs = true;
     private float _nextEnemyContactDamageTime;
+    private bool _isDead;
 
     // Для совместимости со старым кодом
     public TMPro.TextMeshProUGUI textHP_Public => textHP;
@@ -39,6 +40,8 @@ public class PlayerHealth : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (_isDead) return;
+
         // Use tag string comparison here to avoid Unity error spam when a tag is not defined in TagManager.
         string otherTag = collision.gameObject.tag;
 
@@ -58,6 +61,8 @@ public class PlayerHealth : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
+        if (_isDead) return;
+
         if (IsEnemyCollision(collision) && Time.time >= _nextEnemyContactDamageTime)
         {
             TakeDamage(enemyContactDamage, "EnemyContactStay");
@@ -67,8 +72,11 @@ public class PlayerHealth : MonoBehaviour
 
     private static bool IsEnemyCollision(Collision collision)
     {
-        return collision.collider != null &&
-               collision.collider.GetComponentInParent<Enemy>() != null;
+        if (collision.collider == null)
+            return false;
+
+        Enemy enemy = collision.collider.GetComponentInParent<Enemy>();
+        return enemy != null && !enemy.IsDead;
     }
 
     private void AutoResolveReferences()
@@ -109,6 +117,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damage, string source)
     {
+        if (_isDead || currentHealth <= 0f) return;
         if (damage <= 0f) return;
 
         float before = currentHealth;
@@ -129,6 +138,9 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(float amount)
     {
+        if (_isDead || amount <= 0f)
+            return;
+
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         UpdateHealthUI();
     }
@@ -136,11 +148,16 @@ public class PlayerHealth : MonoBehaviour
     public void SetHealth(float health)
     {
         currentHealth = Mathf.Clamp(health, 0f, maxHealth);
+        _isDead = currentHealth <= 0f;
         UpdateHealthUI();
     }
 
     private void Die()
     {
+        if (_isDead)
+            return;
+
+        _isDead = true;
         if (playerPause != null)
             playerPause.ShowLoseScreen();
     }

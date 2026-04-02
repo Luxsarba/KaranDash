@@ -1,12 +1,17 @@
 using UnityEngine;
 
-public class NoteTrigger : MonoBehaviour
+public class NoteTrigger : MonoBehaviour, IPlayerInteractable
 {
     [SerializeField] private string noteTitle = "Zametka";
     [SerializeField] private string noteSubtitle = "Story Note";
     [SerializeField, TextArea(6, 20)] private string noteText =
         "Eto zaglushka zapisok. Zdes mozhno zadat lyuboj tekst dlya syuzhetnoj zametki.";
     [SerializeField] private Sprite backgroundSprite;
+
+    public bool TryInteract(PlayerInteractionContext context)
+    {
+        return TryTriggerNote();
+    }
 
     public void TriggerNote()
     {

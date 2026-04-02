@@ -118,7 +118,7 @@ public class PlayerWeapon : MonoBehaviour
         _canShoot = false;
         Invoke(nameof(ResetShootCooldown), fireInterval);
 
-        if (GameManager.currentAmmo <= 0 || !_isShooting)
+        if (!GameManager.HasAmmo || !_isShooting)
         {
             TryMeleeAttack();
         }
@@ -140,7 +140,7 @@ private void PerformShooting()
     {
         shootVfx?.Play();
         FireSound?.Play();
-        GameManager.currentAmmo--;
+        GameManager.ConsumeAmmo();
         UpdateAmmoUI();
 
         if (TryRaycastEnemy(out var hit, out var enemy, shootDistance))

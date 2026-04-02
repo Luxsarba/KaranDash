@@ -16,6 +16,7 @@ public class PlayerPause : MonoBehaviour
     [SerializeField] private bool startPaused = false;
 
     private bool paused;
+    private bool endScreenLocked;
 
     public bool IsPaused => paused;
 
@@ -34,6 +35,9 @@ public class PlayerPause : MonoBehaviour
 
     private void Update()
     {
+        if (endScreenLocked)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (IsOverlayOpen())
@@ -45,6 +49,9 @@ public class PlayerPause : MonoBehaviour
 
     public void TogglePause()
     {
+        if (endScreenLocked)
+            return;
+
         if (paused)
             Continue();
         else
@@ -53,11 +60,13 @@ public class PlayerPause : MonoBehaviour
 
     public void Pause()
     {
+        if (endScreenLocked)
+            return;
+
         paused = true;
         Time.timeScale = 0;
-        
-        if (playerUI != null)
-            playerUI.SetActive(false);
+
+        SetGameplayUiVisible(false);
         if (pauseScreen != null)
             pauseScreen.SetActive(true);
         
@@ -67,13 +76,15 @@ public class PlayerPause : MonoBehaviour
 
     public void Continue()
     {
+        if (endScreenLocked)
+            return;
+
         if (IsOverlayOpen())
         {
             paused = true;
             Time.timeScale = 0;
 
-            if (playerUI != null)
-                playerUI.SetActive(false);
+            SetGameplayUiVisible(false);
             if (pauseScreen != null)
                 pauseScreen.SetActive(true);
 
@@ -84,9 +95,8 @@ public class PlayerPause : MonoBehaviour
 
         paused = false;
         Time.timeScale = 1;
-        
-        if (playerUI != null)
-            playerUI.SetActive(true);
+
+        SetGameplayUiVisible(true);
         if (pauseScreen != null)
             pauseScreen.SetActive(false);
         
@@ -96,11 +106,12 @@ public class PlayerPause : MonoBehaviour
 
     public void ShowWinScreen()
     {
+        endScreenLocked = true;
+        paused = true;
         Time.timeScale = 0;
         GameManager.DisablePlayerInput();
-        
-        if (playerUI != null)
-            playerUI.SetActive(false);
+
+        SetGameplayUiVisible(false);
         if (winScreen != null)
             winScreen.SetActive(true);
         
@@ -109,11 +120,12 @@ public class PlayerPause : MonoBehaviour
 
     public void ShowLoseScreen()
     {
+        endScreenLocked = true;
+        paused = true;
         Time.timeScale = 0;
         GameManager.DisablePlayerInput();
-        
-        if (playerUI != null)
-            playerUI.SetActive(false);
+
+        SetGameplayUiVisible(false);
         if (loseScreen != null)
             loseScreen.SetActive(true);
         
@@ -122,6 +134,7 @@ public class PlayerPause : MonoBehaviour
 
     public void Restart()
     {
+        endScreenLocked = false;
         paused = false;
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -129,11 +142,10 @@ public class PlayerPause : MonoBehaviour
 
     public void Quit()
     {
+        endScreenLocked = false;
         paused = false;
         Time.timeScale = 1;
-        GameManager.DisablePlayerInput();
-        ShowCursor();
-        SceneManager.LoadScene("MenuScene");
+        PlayerSessionManager.ReturnToMenu();
     }
 
     public void HideCursor()
@@ -153,6 +165,30 @@ public class PlayerPause : MonoBehaviour
     private static bool IsOverlayOpen()
     {
         return OverlayModalController.HasOpenOverlay;
+    }
+
+    private void SetGameplayUiVisible(bool visible)
+    {
+        if (playerUI == null)
+            return;
+
+        // If modal screens are children of playerUI, disabling the whole root hides them too.
+        if (ContainsScreen(playerUI, pauseScreen) ||
+            ContainsScreen(playerUI, winScreen) ||
+            ContainsScreen(playerUI, loseScreen))
+        {
+            return;
+        }
+
+        playerUI.SetActive(visible);
+    }
+
+    private static bool ContainsScreen(GameObject root, GameObject screen)
+    {
+        if (root == null || screen == null)
+            return false;
+
+        return screen.transform.IsChildOf(root.transform);
     }
 
     /// <summary>

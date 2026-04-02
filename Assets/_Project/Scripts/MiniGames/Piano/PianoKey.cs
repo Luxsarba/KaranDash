@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// Piano key that can be pressed through player interaction.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class PianoKey : MonoBehaviour
+public class PianoKey : MonoBehaviour, IPlayerInteractable
 {
     [Header("Note")]
     [Tooltip("Format: C4, D#4, Bb4, A5")]
@@ -35,6 +35,11 @@ public class PianoKey : MonoBehaviour
     private MaterialPropertyBlock _propertyBlock;
 
     public string NormalizedNoteId => _normalizedNoteId;
+    public bool TryInteract(PlayerInteractionContext context)
+    {
+        return TryPressFromInteraction();
+    }
+
 
     private void Awake()
     {

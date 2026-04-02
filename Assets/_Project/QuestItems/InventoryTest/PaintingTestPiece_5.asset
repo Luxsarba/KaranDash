@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: painting_test_piece_5
   displayName: Piece 6
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3f49730491818164bb4c97df33cf1498, type: 3}
   category: 2
   collectionSet: {fileID: 11400000, guid: 7cb0d3a4c7d625e42b842527f73a417c, type: 2}
   pieceIndex: 5

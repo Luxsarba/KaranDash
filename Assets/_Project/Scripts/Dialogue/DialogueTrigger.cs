@@ -1,10 +1,15 @@
 using UnityEngine;
 
-public class DialogueTrigger : MonoBehaviour
+public class DialogueTrigger : MonoBehaviour, IPlayerInteractable
 {
     [SerializeField] private Dialogue dialogue;
 
     public Dialogue Dialogue => dialogue;
+
+    public bool TryInteract(PlayerInteractionContext context)
+    {
+        return TryTriggerDialogue();
+    }
 
     public void TriggerDialogue()
     {

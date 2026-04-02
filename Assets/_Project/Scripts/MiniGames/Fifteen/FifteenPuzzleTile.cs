@@ -5,7 +5,7 @@ using System.Collections;
 /// Single tile in the fifteen puzzle.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class FifteenPuzzleTile : MonoBehaviour
+public class FifteenPuzzleTile : MonoBehaviour, IPlayerInteractable
 {
     [Header("Tile")]
     [SerializeField] private int tileValue = 1;
@@ -43,6 +43,11 @@ public class FifteenPuzzleTile : MonoBehaviour
     public Vector2Int SolvedCell => solvedCell;
     public Vector2Int CurrentCell => _currentCell;
     public bool IsMoveAnimating => _moveCoroutine != null;
+    public bool TryInteract(PlayerInteractionContext context)
+    {
+        return TryPressFromInteraction();
+    }
+
 
     private void Awake()
     {
