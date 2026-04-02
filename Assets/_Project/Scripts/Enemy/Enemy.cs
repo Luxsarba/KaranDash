@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
+    public static event Action<Enemy> Died;
+
     [Header("Activity")]
     [SerializeField] private bool botActivity = true;
     [SerializeField] private bool staticEnemy = false;
@@ -39,13 +42,18 @@ public class Enemy : MonoBehaviour
     private TextMeshProUGUI hpText;
 
     private Animator animator;
+    private Animation legacyAnimation;
 
     private float maxHp;
     private bool isDead;
 
+    public bool IsDead => isDead;
+
     private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
+        if (!animator)
+            legacyAnimation = GetComponentInChildren<Animation>();
 
         // Если не назначили в инспекторе — попробуем найти сами
         if (!agent) agent = GetComponent<NavMeshAgent>();
@@ -92,6 +100,7 @@ public class Enemy : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        Died?.Invoke(this);
 
         // VFX
         if (deathParticlePrefab)
@@ -112,6 +121,11 @@ public class Enemy : MonoBehaviour
         // Animation
         if (animator && !string.IsNullOrEmpty(deathAnimState))
             animator.Play(deathAnimState, 0, 0f);
+        else if (legacyAnimation && !string.IsNullOrEmpty(deathAnimState) && legacyAnimation.GetClip(deathAnimState) != null)
+        {
+            legacyAnimation.Stop();
+            legacyAnimation.Play(deathAnimState);
+        }
 
         // Sound
         if (dyingSound) dyingSound.Play();
@@ -184,3 +198,4 @@ public class Enemy : MonoBehaviour
         RefreshHpUi();
     }
 }
+

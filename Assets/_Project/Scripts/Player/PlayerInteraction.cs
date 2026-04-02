@@ -38,8 +38,8 @@ public class PlayerInteraction : MonoBehaviour
         switch (other.tag)
         {
             case "AmmoCrate":
-                HandleAmmoCrate();
-                Destroy(other.gameObject);
+                if (HandleAmmoCrate())
+                    Destroy(other.gameObject);
                 break;
             case "QuestTrigger":
                 Destroy(other.gameObject);
@@ -98,64 +98,46 @@ public class PlayerInteraction : MonoBehaviour
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         bool memoryGameRunning = MemoryPanel.IsAnyGameRunning();
-        float maxDistance = interactRange;
-
-        if (!RaycastService.TryRaycast(ray, out RaycastHit hit, maxDistance))
+        if (!RaycastService.TryRaycast(ray, out RaycastHit hit, interactRange))
             return;
 
-        float distanceToHit = Vector3.Distance(hit.point, transform.position);
+        if (Vector3.Distance(hit.point, transform.position) > interactRange)
+            return;
+
+        if (!RaycastService.TryGetInterfaceInParents(hit, out IPlayerInteractable interactable))
+            return;
 
         if (memoryGameRunning)
         {
-            if (distanceToHit > interactRange)
+            if (interactable is not MemoryButton)
                 return;
-
-            if (RaycastService.TryGetComponentInParents(hit, out MemoryButton memoryButton))
-                HandleMemoryButton(memoryButton);
-
-            return;
         }
-
-        if (distanceToHit > interactRange)
-            return;
-
-        PlayerInteractionContext interactionContext = CreateInteractionContext(hit);
-        if (RaycastService.TryGetInterfaceInParents(hit, out IPlayerInteractable interactable) &&
-            interactable.TryInteract(interactionContext))
+        else if (interactable is MemoryButton)
         {
+            if (RaycastService.TryGetInterfaceInParents(hit, out MemoryGameTrigger memoryTrigger))
+            {
+                memoryTrigger.TryInteract(CreateInteractionContext(hit));
+            }
+
             return;
         }
 
-        if (RaycastService.TryGetComponentInParents(hit, out SaveStation _))
-            HandleSaveStation(hit);
-        else if (RaycastService.TryGetComponentInParents(hit, out PianoKey pianoKey))
-            HandlePianoKey(pianoKey);
-        else if (RaycastService.TryGetComponentInParents(hit, out FifteenPuzzleTile puzzleTile))
-            HandleFifteenPuzzleTile(puzzleTile);
-        else if (RaycastService.TryGetComponentInParents(hit, out QuestItemPickup _))
-            HandleQuestItem(hit);
-        else if (RaycastService.TryGetComponentInParents(hit, out DialogueTrigger _))
-            HandleDialogNPC(hit);
-        else if (RaycastService.TryGetComponentInParents(hit, out NoteTrigger _))
-            HandleNote(hit);
-        else if (RaycastService.TryGetComponentInParents(hit, out LeverSwitch leverSwitch))
-            HandleLever(leverSwitch);
-        else if (RaycastService.TryGetComponentInParents(hit, out FetchQuestNPC _))
-            HandleQuestNPC(hit);
-        else if (RaycastService.HitHasTag(hit, "Radio"))
-            HandleRadio(hit);
-        else if (RaycastService.TryGetComponentInParents(hit, out MemoryGameTrigger _))
-            HandleMemoryGame(hit);
+        interactable.TryInteract(CreateInteractionContext(hit));
     }
 
-    private void HandleAmmoCrate()
+    private bool HandleAmmoCrate()
     {
-        if (GameManager.currentAmmo < 10)
-        {
-            GameManager.currentAmmo = Mathf.Min(GameManager.currentAmmo + 2, 10);
-            if (ammoText != null)
-                ammoText.text = GameManager.currentAmmo.ToString();
-        }
+        if (GameManager.infiniteAmmo)
+            return false;
+
+        if (GameManager.currentAmmo >= 10)
+            return false;
+
+        GameManager.currentAmmo = Mathf.Min(GameManager.currentAmmo + 2, 10);
+        if (ammoText != null)
+            ammoText.text = GameManager.currentAmmo.ToString();
+
+        return true;
     }
 
     private void HandleMedKit(Collider other)
@@ -179,77 +161,6 @@ public class PlayerInteraction : MonoBehaviour
             animator.Play("Jump");
             animator.SetBool("IsJumping", true);
         }
-    }
-
-    private void HandleSaveStation(RaycastHit hit)
-    {
-        var station = hit.collider.GetComponentInParent<SaveStation>();
-        if (station != null)
-            station.SaveHere(GetComponent<Player>());
-    }
-
-    private void HandleQuestItem(RaycastHit hit)
-    {
-        var pickup = hit.collider.GetComponentInParent<QuestItemPickup>();
-        pickup?.TryPickup(inventory);
-    }
-
-    private void HandleDialogNPC(RaycastHit hit)
-    {
-        var trigger = hit.collider.GetComponentInParent<DialogueTrigger>();
-        trigger?.TryTriggerDialogue();
-    }
-
-    private void HandleNote(RaycastHit hit)
-    {
-        var trigger = hit.collider.GetComponentInParent<NoteTrigger>();
-        trigger?.TryTriggerNote();
-    }
-
-    private void HandleLever(LeverSwitch leverSwitch)
-    {
-        leverSwitch?.TryActivate();
-    }
-
-    private void HandleQuestNPC(RaycastHit hit)
-    {
-        var npc = hit.collider.GetComponentInParent<FetchQuestNPC>();
-        var resolvedInventory = inventory != null ? inventory : GetComponent<PlayerInventory>();
-        if (npc && resolvedInventory)
-            npc.Interact(resolvedInventory);
-    }
-
-    private void HandleRadio(RaycastHit hit)
-    {
-        var audio = hit.collider ? hit.collider.GetComponentInParent<AudioSource>() : null;
-        if (audio != null)
-        {
-            if (audio.isPlaying)
-                audio.Stop();
-            else
-                audio.Play();
-        }
-    }
-
-    private void HandleMemoryGame(RaycastHit hit)
-    {
-        var trigger = hit.collider.GetComponentInParent<MemoryGameTrigger>();
-        trigger?.TriggerGame();
-    }
-
-    private void HandleMemoryButton(MemoryButton button)
-    {
-        button?.TryPressFromInteraction();
-    }
-
-    private void HandlePianoKey(PianoKey key)
-    {
-        key?.TryPressFromInteraction();
-    }
-
-    private void HandleFifteenPuzzleTile(FifteenPuzzleTile tile)
-    {
-        tile?.TryPressFromInteraction();
     }
 
     private PlayerInteractionContext CreateInteractionContext(RaycastHit hit)

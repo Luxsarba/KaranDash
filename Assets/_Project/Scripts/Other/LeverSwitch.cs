@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class LeverSwitch : MonoBehaviour
+public class LeverSwitch : MonoBehaviour, IPlayerInteractable
 {
     public enum RotationAxis
     {
@@ -23,6 +23,24 @@ public class LeverSwitch : MonoBehaviour
 
     private bool _isAnimating;
     private bool _hasBeenUsed;
+    public bool TryInteract(PlayerInteractionContext context)
+    {
+        if (_isAnimating)
+            return false;
+
+        if (singleUse && _hasBeenUsed)
+            return false;
+
+        if (targetToRotate == null)
+        {
+            Debug.LogWarning("[LeverSwitch] targetToRotate is not assigned.", this);
+            return false;
+        }
+
+        StartCoroutine(RotateRoutine());
+        return true;
+    }
+
 
     public void Configure(
         Transform rotationTarget,
@@ -44,21 +62,9 @@ public class LeverSwitch : MonoBehaviour
         _hasBeenUsed = false;
     }
 
-    public void TryActivate()
+public void TryActivate()
     {
-        if (_isAnimating)
-            return;
-
-        if (singleUse && _hasBeenUsed)
-            return;
-
-        if (targetToRotate == null)
-        {
-            Debug.LogWarning("[LeverSwitch] targetToRotate is not assigned.", this);
-            return;
-        }
-
-        StartCoroutine(RotateRoutine());
+        TryInteract(default);
     }
 
     private IEnumerator RotateRoutine()

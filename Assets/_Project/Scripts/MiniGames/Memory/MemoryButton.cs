@@ -4,7 +4,7 @@ using UnityEngine;
 /// Interactive button for MemoryPanel.
 /// </summary>
 [RequireComponent(typeof(Renderer))]
-public class MemoryButton : MonoBehaviour
+public class MemoryButton : MonoBehaviour, IPlayerInteractable
 {
     private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
     private static readonly int BaseColorPropertyId = Shader.PropertyToID("_BaseColor");
@@ -28,6 +28,11 @@ public class MemoryButton : MonoBehaviour
     private bool _isInitialized;
 
     public int ButtonIndex => _index;
+    public bool TryInteract(PlayerInteractionContext context)
+    {
+        return TryPressFromInteraction();
+    }
+
 
     private void Awake()
     {

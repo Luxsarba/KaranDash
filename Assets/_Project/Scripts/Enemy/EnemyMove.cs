@@ -35,6 +35,14 @@ public class EnemyMove : MonoBehaviour
         if (!TryResolvePlayer())
             return;
 
+        if (!IsPlayerAlive())
+        {
+            _playerDetected = false;
+            StopAgent();
+            SetAnimatorState(0);
+            return;
+        }
+
         HandleOffMeshLinkTraversal();
         UpdateDetection();
 
@@ -105,6 +113,9 @@ public class EnemyMove : MonoBehaviour
     private void TryAttack()
     {
         if (!_attackReady)
+            return;
+
+        if (!IsPlayerAlive())
             return;
 
         if (_playerHealth != null)
@@ -213,5 +224,13 @@ public class EnemyMove : MonoBehaviour
             return false;
 
         return HorizontalDistanceToPlayer() <= attackRange;
+    }
+
+    private bool IsPlayerAlive()
+    {
+        if (_playerHealth != null)
+            return _playerHealth.IsAlive();
+
+        return _player != null && _player.playerHP > 0f;
     }
 }

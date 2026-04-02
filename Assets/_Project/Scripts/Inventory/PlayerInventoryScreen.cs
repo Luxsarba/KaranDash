@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 public class PlayerInventoryScreen : MonoBehaviour
 {
@@ -131,7 +133,7 @@ public class PlayerInventoryScreen : MonoBehaviour
 
             if (set == null || i >= pieceCount)
             {
-                slot.SetHidden();
+                slot.ShowEmpty();
                 continue;
             }
 
@@ -166,7 +168,7 @@ public class PlayerInventoryScreen : MonoBehaviour
             InventorySlotDefinition definition = definitions != null && i < definitions.Length ? definitions[i] : null;
             if (definition == null)
             {
-                slot.SetHidden();
+                slot.ShowEmpty();
                 continue;
             }
 
@@ -191,6 +193,13 @@ public class PlayerInventoryScreen : MonoBehaviour
 
     private void ResolveReferences()
     {
+        if (inventoryPanel == null)
+        {
+            Transform panel = FindDescendantByName(transform, "Inventory Panel");
+            if (panel != null)
+                inventoryPanel = panel.gameObject;
+        }
+
         if (inventory == null)
         {
             if (GameManager.inventory != null)
@@ -209,18 +218,15 @@ public class PlayerInventoryScreen : MonoBehaviour
                 playerPause = FindObjectOfType<PlayerPause>(true);
         }
 
-        if (paintingSlots == null || paintingSlots.Length == 0)
-        {
-            Transform root = inventoryPanel != null ? inventoryPanel.transform.Find("Window/PaintingSection/PaintingSlots") : null;
-            if (root != null)
-                paintingSlots = root.GetComponentsInChildren<InventorySlotView>(true);
-        }
+        UpdateResolvedSlots(ref paintingSlots, ResolveSlots("PaintingSlots", "PaintingSlot_"));
 
-        if (storySlots == null || storySlots.Length == 0)
+        UpdateResolvedSlots(ref storySlots, ResolveSlots("StorySlots", "StorySlot_"));
+
+        if (headerText == null && inventoryPanel != null)
         {
-            Transform root = inventoryPanel != null ? inventoryPanel.transform.Find("Window/StorySection/StorySlots") : null;
-            if (root != null)
-                storySlots = root.GetComponentsInChildren<InventorySlotView>(true);
+            Transform header = FindDescendantByName(inventoryPanel.transform, "Header");
+            if (header != null)
+                headerText = header.GetComponent<TMP_Text>();
         }
     }
 
@@ -249,5 +255,105 @@ public class PlayerInventoryScreen : MonoBehaviour
         }
 
         return null;
+    }
+
+    private InventorySlotView[] ResolveSlots(string containerName, string slotNamePrefix)
+    {
+        if (inventoryPanel == null)
+            return Array.Empty<InventorySlotView>();
+
+        Transform explicitContainer = FindDescendantByName(inventoryPanel.transform, containerName);
+        if (explicitContainer != null)
+            return SortSlots(explicitContainer.GetComponentsInChildren<InventorySlotView>(true), slotNamePrefix);
+
+        return SortSlots(inventoryPanel.GetComponentsInChildren<InventorySlotView>(true), slotNamePrefix);
+    }
+
+    private static Transform FindDescendantByName(Transform root, string name)
+    {
+        if (root == null || string.IsNullOrWhiteSpace(name))
+            return null;
+
+        Transform[] descendants = root.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < descendants.Length; i++)
+        {
+            Transform descendant = descendants[i];
+            if (descendant != null && descendant.name == name)
+                return descendant;
+        }
+
+        return null;
+    }
+
+    private static InventorySlotView[] SortSlots(InventorySlotView[] candidates, string slotNamePrefix)
+    {
+        if (candidates == null || candidates.Length == 0)
+            return Array.Empty<InventorySlotView>();
+
+        var filtered = new List<InventorySlotView>(candidates.Length);
+        for (int i = 0; i < candidates.Length; i++)
+        {
+            InventorySlotView slot = candidates[i];
+            if (slot == null)
+                continue;
+
+            if (!string.IsNullOrWhiteSpace(slotNamePrefix) && !slot.name.StartsWith(slotNamePrefix, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            filtered.Add(slot);
+        }
+
+        if (filtered.Count == 0)
+            filtered.AddRange(candidates);
+
+        filtered.Sort((left, right) => CompareSlotNames(left != null ? left.name : string.Empty, right != null ? right.name : string.Empty));
+        return filtered.ToArray();
+    }
+
+    private static void UpdateResolvedSlots(ref InventorySlotView[] target, InventorySlotView[] resolved)
+    {
+        if (resolved == null || resolved.Length == 0)
+            return;
+
+        if (target == null || target.Length != resolved.Length)
+        {
+            target = resolved;
+            return;
+        }
+
+        for (int i = 0; i < resolved.Length; i++)
+        {
+            if (target[i] != resolved[i])
+            {
+                target = resolved;
+                return;
+            }
+        }
+    }
+
+    private static int CompareSlotNames(string left, string right)
+    {
+        int leftIndex = ExtractTrailingNumber(left);
+        int rightIndex = ExtractTrailingNumber(right);
+
+        if (leftIndex != rightIndex)
+            return leftIndex.CompareTo(rightIndex);
+
+        return string.Compare(left, right, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static int ExtractTrailingNumber(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return int.MaxValue;
+
+        int end = value.Length - 1;
+        while (end >= 0 && char.IsDigit(value[end]))
+            end--;
+
+        if (end == value.Length - 1)
+            return int.MaxValue;
+
+        return int.TryParse(value.Substring(end + 1), out int result) ? result : int.MaxValue;
     }
 }

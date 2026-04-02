@@ -36,12 +36,12 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 58c8bb55e61298e4c96103601955c9ba, type: 2}
     placeholderTitle: Quest Pass
     placeholderIcon: {fileID: 0}
-  - item: {fileID: 0}
-    placeholderTitle: Future Story Item
+  - item: {fileID: 11400000, guid: ac36492bf8585c7419b4aa6eb628b391, type: 2}
+    placeholderTitle: "\u041A\u043B\u044E\u0447"
     placeholderIcon: {fileID: 0}
-  - item: {fileID: 0}
-    placeholderTitle: Future Story Item
+  - item: {fileID: 11400000, guid: 896b5675e6ccebb408fec87d9b7f946a, type: 2}
+    placeholderTitle: "\u0410\u0440\u0442\u0435\u0444\u0430\u043A\u0442"
     placeholderIcon: {fileID: 0}
-  - item: {fileID: 0}
-    placeholderTitle: Future Story Item
+  - item: {fileID: 11400000, guid: c4211be3b5d9d6b43a8e4f86fd8d5f82, type: 2}
+    placeholderTitle: "\u0420\u0443\u043B\u0435\u0442\u043A\u0430"
     placeholderIcon: {fileID: 0}

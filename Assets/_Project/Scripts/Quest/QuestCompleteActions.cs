@@ -1,19 +1,24 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.Events;
 
 public class QuestCompleteActions : MonoBehaviour
 {
-    [Header("Что выдать в инвентарь после квеста")]
+    [Header("��� ������ � ��������� ����� ������")]
     [SerializeField] private InventoryItemData[] rewardItems;
 
-    [Header("Что включить после квеста")]
+    [Header("��� �������� ����� ������")]
     [SerializeField] private GameObject[] enableObjects;
 
-    [Header("Что выключить после квеста")]
+    [Header("��� ��������� ����� ������")]
     [SerializeField] private GameObject[] disableObjects;
 
-    [Header("Что заспавнить после квеста")]
+    [Header("��� ���������� ����� ������")]
     [SerializeField] private GameObject[] spawnPrefabs;
     [SerializeField] private Transform[] spawnPoints;
+
+    [Header("��� ������� ������ � ������ completion")]
+    [SerializeField] private UnityEvent onCompleted = new UnityEvent();
+
     private bool persistentWorldStateApplied;
 
     public void Run()
@@ -25,6 +30,7 @@ public class QuestCompleteActions : MonoBehaviour
     {
         GrantRewardItems(inventory);
         ApplyPersistentState();
+        onCompleted?.Invoke();
     }
 
     public void ApplyPersistentState()
