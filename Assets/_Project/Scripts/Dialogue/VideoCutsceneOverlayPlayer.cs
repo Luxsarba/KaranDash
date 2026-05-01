@@ -26,7 +26,7 @@ public class VideoCutsceneOverlayPlayer : MonoBehaviour
         ResolveReferences();
     }
 
-    private void Update()
+private void Update()
     {
         if (!_isPlaying)
             return;
@@ -34,8 +34,7 @@ public class VideoCutsceneOverlayPlayer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) ||
             Input.GetKeyDown(KeyCode.Space) ||
             Input.GetKeyDown(KeyCode.Return) ||
-            Input.GetKeyDown(KeyCode.KeypadEnter) ||
-            Input.GetMouseButtonDown(0))
+            Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             FinishPlayback();
         }

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: OfficeKill12Token
   displayName: Office Kill 12 Complete
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cabf1636128dc4a45a62ace2c1d9a18c, type: 3}
   category: 0

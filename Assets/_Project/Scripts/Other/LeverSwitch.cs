@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 public class LeverSwitch : MonoBehaviour, IPlayerInteractable
@@ -23,6 +24,10 @@ public class LeverSwitch : MonoBehaviour, IPlayerInteractable
 
     private bool _isAnimating;
     private bool _hasBeenUsed;
+
+    public event Action<LeverSwitch> Activated;
+    public bool IsActivated => _hasBeenUsed;
+
     public bool TryInteract(PlayerInteractionContext context)
     {
         if (_isAnimating)
@@ -62,7 +67,7 @@ public class LeverSwitch : MonoBehaviour, IPlayerInteractable
         _hasBeenUsed = false;
     }
 
-public void TryActivate()
+    public void TryActivate()
     {
         TryInteract(default);
     }
@@ -98,6 +103,7 @@ public void TryActivate()
 
         _hasBeenUsed = true;
         _isAnimating = false;
+        Activated?.Invoke(this);
 
         if (onSuccess != null)
             onSuccess.Execute();

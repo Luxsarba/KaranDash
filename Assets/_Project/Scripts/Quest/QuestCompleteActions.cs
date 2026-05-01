@@ -1,22 +1,22 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 public class QuestCompleteActions : MonoBehaviour
 {
-    [Header("��� ������ � ��������� ����� ������")]
+    [Header("Reward items to add to inventory")]
     [SerializeField] private InventoryItemData[] rewardItems;
 
-    [Header("��� �������� ����� ������")]
+    [Header("Objects to enable after completion")]
     [SerializeField] private GameObject[] enableObjects;
 
-    [Header("��� ��������� ����� ������")]
+    [Header("Objects to disable after completion")]
     [SerializeField] private GameObject[] disableObjects;
 
-    [Header("��� ���������� ����� ������")]
+    [Header("Prefabs to spawn after completion")]
     [SerializeField] private GameObject[] spawnPrefabs;
     [SerializeField] private Transform[] spawnPoints;
 
-    [Header("��� ������� ������ � ������ completion")]
+    [Header("Additional completion callbacks")]
     [SerializeField] private UnityEvent onCompleted = new UnityEvent();
 
     private bool persistentWorldStateApplied;

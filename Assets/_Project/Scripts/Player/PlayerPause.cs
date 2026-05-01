@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Пауза, UI экраны и курсор.
@@ -22,10 +23,14 @@ public class PlayerPause : MonoBehaviour
 
     private void Start()
     {
+        ResolveUiReferences();
+        WireButtons();
+
         if (startPaused)
         {
             Pause();
-            pauseScreen.SetActive(false);
+            if (pauseScreen != null)
+                pauseScreen.SetActive(false);
         }
         else
         {
@@ -197,5 +202,78 @@ public class PlayerPause : MonoBehaviour
     private void OnDestroy()
     {
         Time.timeScale = 1;
+    }
+
+    private void ResolveUiReferences()
+    {
+        if (playerUI == null)
+            playerUI = FindByName("PlayerUI");
+
+        if (pauseScreen == null)
+            pauseScreen = FindByName("PauseScreen");
+
+        if (winScreen == null)
+            winScreen = FindByName("WinScreen");
+
+        if (loseScreen == null)
+            loseScreen = FindByName("LoseScreen");
+    }
+
+    private void WireButtons()
+    {
+        BindButton(pauseScreen, "Continue", Continue);
+        BindButton(pauseScreen, "Restart", Restart);
+        BindButton(pauseScreen, "Quit", Quit);
+
+        BindButton(winScreen, "Restart", Restart);
+        BindButton(winScreen, "Quit", Quit);
+
+        BindButton(loseScreen, "Restart", Restart);
+        BindButton(loseScreen, "Quit", Quit);
+    }
+
+    private static void BindButton(GameObject root, string nameHint, UnityEngine.Events.UnityAction callback)
+    {
+        if (root == null || callback == null)
+            return;
+
+        Button[] buttons = root.GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            if (button == null)
+                continue;
+
+            string lowerName = button.name.ToLowerInvariant();
+            if (!lowerName.Contains(nameHint.ToLowerInvariant()))
+                continue;
+
+            button.onClick.RemoveListener(callback);
+            button.onClick.AddListener(callback);
+        }
+    }
+
+    private static GameObject FindByName(string targetName)
+    {
+        if (string.IsNullOrWhiteSpace(targetName))
+            return null;
+
+        Transform[] all = Resources.FindObjectsOfTypeAll<Transform>();
+        for (int i = 0; i < all.Length; i++)
+        {
+            Transform t = all[i];
+            if (t == null)
+                continue;
+
+            if (!string.Equals(t.name, targetName, System.StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (!t.gameObject.scene.IsValid())
+                continue;
+
+            return t.gameObject;
+        }
+
+        return null;
     }
 }

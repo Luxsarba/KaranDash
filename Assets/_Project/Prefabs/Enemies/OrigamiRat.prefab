@@ -3468,8 +3468,8 @@ MonoBehaviour:
   ragdollControl: {fileID: 3761636807703100234}
   mainCollider: {fileID: 8764861591068248416}
   hpCanvasPrefab: {fileID: 4368917641135858692, guid: dbf8895c2d0f03041a6bd90918c63086, type: 3}
-  hasLoot: 1
-  lootPrefab: {fileID: 3633840203402692087, guid: 7131edd4de14b8547861f3fe37857281, type: 3}
+  hasLoot: 0
+  lootPrefab: {fileID: 0}
 --- !u!114 &523724623981439904
 MonoBehaviour:
   m_ObjectHideFlags: 0

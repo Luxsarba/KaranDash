@@ -14,6 +14,8 @@ public class FetchQuestNPC : MonoBehaviour, IPlayerInteractable
 
     [Header("События по выполнении")]
     [SerializeField] private QuestCompleteActions onCompleteActions;
+    [SerializeField] private InventoryItemData[] guaranteedCompletedItems;
+    [SerializeField] private bool completeImmediatelyWhenNoRequiredItem = true;
 
     private bool questGiven;
     private bool questCompleted;
@@ -77,6 +79,19 @@ public class FetchQuestNPC : MonoBehaviour, IPlayerInteractable
             return;
         }
 
+        bool canCompleteWithoutItem = completeImmediatelyWhenNoRequiredItem && requiredItem == null;
+        if (canCompleteWithoutItem || (inv != null && inv.Has(requiredItem)))
+        {
+            if (inv != null && requiredItem != null)
+                inv.Remove(requiredItem);
+
+            SetQuestState(true, true);
+            DialogueManager.Instance.StartDialogue(completedDialogue);
+            if (onCompleteActions)
+                onCompleteActions.Run(inv);
+            return;
+        }
+
         if (!questGiven)
         {
             SetQuestState(true, false);
@@ -84,18 +99,7 @@ public class FetchQuestNPC : MonoBehaviour, IPlayerInteractable
             return;
         }
 
-        if (inv != null && inv.Has(requiredItem))
-        {
-            inv.Remove(requiredItem);
-            SetQuestState(true, true);
-            DialogueManager.Instance.StartDialogue(completedDialogue);
-            if (onCompleteActions)
-                onCompleteActions.Run(inv);
-        }
-        else
-        {
-            DialogueManager.Instance.StartDialogue(waitingDialogue);
-        }
+        DialogueManager.Instance.StartDialogue(waitingDialogue);
     }
 
     private void ApplySavedState()
@@ -115,6 +119,9 @@ public class FetchQuestNPC : MonoBehaviour, IPlayerInteractable
 
         if (questCompleted && onCompleteActions != null)
             onCompleteActions.ApplyPersistentState();
+
+        if (questCompleted)
+            EnsureCompletedRewards();
     }
 
     private void SetQuestState(bool isGiven, bool isCompleted)
@@ -139,6 +146,42 @@ public class FetchQuestNPC : MonoBehaviour, IPlayerInteractable
     private void HandleQuestStateChanged()
     {
         ApplySavedState();
+    }
+
+    private void EnsureCompletedRewards()
+    {
+        if (guaranteedCompletedItems == null || guaranteedCompletedItems.Length == 0)
+            return;
+
+        PlayerInventory inventory = ResolveInventory();
+        if (inventory == null)
+            return;
+
+        for (int i = 0; i < guaranteedCompletedItems.Length; i++)
+        {
+            InventoryItemData item = guaranteedCompletedItems[i];
+            if (item == null || string.IsNullOrWhiteSpace(item.itemId))
+                continue;
+
+            if (!inventory.Has(item.itemId))
+                inventory.TryAdd(item);
+        }
+    }
+
+    private PlayerInventory ResolveInventory()
+    {
+        if (GameManager.inventory != null)
+            return GameManager.inventory;
+
+        Player player = GameManager.player;
+        if (player != null)
+        {
+            PlayerInventory fromPlayer = player.GetInventory();
+            if (fromPlayer != null)
+                return fromPlayer;
+        }
+
+        return FindObjectOfType<PlayerInventory>();
     }
 
     private void ResolveReferences(bool ensurePersistentIdComponent)

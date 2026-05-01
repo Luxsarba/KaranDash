@@ -836,7 +836,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 162411465}
   m_Enabled: 1
-  m_VideoClip: {fileID: 0}
+  m_VideoClip: {fileID: 32900000, guid: 81368c213a4df6a489457a89f197dba3, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -849,7 +849,7 @@ VideoPlayer:
   m_DataSource: 0
   m_TimeUpdateMode: 2
   m_PlaybackSpeed: 1
-  m_AudioOutputMode: 0
+  m_AudioOutputMode: 2
   m_TargetAudioSources:
   - {fileID: 0}
   m_DirectAudioVolumes:
@@ -4682,8 +4682,8 @@ MonoBehaviour:
   introVideoPlayer: {fileID: 162411467}
   skipIntroButton: {fileID: 1508741718}
   introRenderTexture: {fileID: 0}
-  introVideoClip: {fileID: 0}
-  newGameSceneName: grappletest
+  introVideoClip: {fileID: 32900000, guid: 81368c213a4df6a489457a89f197dba3, type: 3}
+  newGameSceneName: 0. Home
 --- !u!4 &1216481724
 Transform:
   m_ObjectHideFlags: 0

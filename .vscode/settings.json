@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "каранDash.sln"
+    "dotnet.defaultSolution": "KaranDash-main_v.2.4.2026.sln"
 }

@@ -55,7 +55,7 @@ public class KillCountObjectiveTracker : MonoBehaviour
 
     private void HandleEnemyDied(Enemy enemy)
     {
-        if (enemy == null || !HasPersistentId || IsCompleted || !CanTrackKills())
+        if (enemy == null || !HasPersistentId || IsCompleted)
             return;
 
         Transform root = trackedEnemiesRoot != null ? trackedEnemiesRoot : transform;
@@ -69,17 +69,19 @@ public class KillCountObjectiveTracker : MonoBehaviour
         ObjectiveCounterState.SetValue(ObjectiveId, targetCount);
         QuestProgressState.SetState(ObjectiveId, questGiven: true, questCompleted: true);
 
-        PlayerInventory inventory = ResolveInventory();
-        if (completionTokenItem != null && inventory != null && !inventory.Has(completionTokenItem))
-            inventory.TryAdd(completionTokenItem);
-
+        PlayerInventory inventory = EnsureCompletionToken();
         if (onReachedTarget != null)
             onReachedTarget.Run(inventory);
     }
 
     private void ApplySavedState()
     {
-        if (onReachedTarget != null && IsCompleted)
+        if (!IsCompleted)
+            return;
+
+        EnsureCompletionToken();
+
+        if (onReachedTarget != null)
             onReachedTarget.ApplyPersistentState();
     }
 
@@ -88,9 +90,13 @@ public class KillCountObjectiveTracker : MonoBehaviour
         ApplySavedState();
     }
 
-    private bool CanTrackKills()
+    private PlayerInventory EnsureCompletionToken()
     {
-        return gatingQuestNpc == null || (gatingQuestNpc.IsQuestGiven && !gatingQuestNpc.IsQuestCompleted);
+        PlayerInventory inventory = ResolveInventory();
+        if (completionTokenItem != null && inventory != null && !inventory.Has(completionTokenItem))
+            inventory.TryAdd(completionTokenItem);
+
+        return inventory;
     }
 
     private PlayerInventory ResolveInventory()

@@ -6,7 +6,16 @@ public class PlayerSessionManager : MonoBehaviour
     private const string ManagerObjectName = "_PlayerSessionManager";
     private const string MenuSceneName = "MenuScene";
     private const string HomeSceneName = "Home";
-    private static readonly Vector3 HiddenSpawnPosition = new Vector3(0f, -10000f, 0f);
+    private static readonly string[] DebugPaintingFragmentIds =
+    {
+        "painting_test_piece_0",
+        "painting_test_piece_1",
+        "painting_test_piece_2",
+        "painting_test_piece_3",
+        "painting_test_piece_4",
+        "painting_test_piece_5"
+    };
+private static readonly Vector3 HiddenSpawnPosition = new Vector3(0f, -10000f, 0f);
 
     private enum RequestKind
     {
@@ -28,6 +37,8 @@ public class PlayerSessionManager : MonoBehaviour
     private static PlayerSessionManager _instance;
 
     [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private KeyCode addPaintingFragmentKey = KeyCode.Keypad8;
+    [SerializeField] private KeyCode quickSaveKey = KeyCode.Keypad5;
     [SerializeField] private KeyCode deleteSaveKey = KeyCode.Keypad9;
 
     private GameObject _playerRootInstance;
@@ -205,7 +216,7 @@ public class PlayerSessionManager : MonoBehaviour
         SaveSystem.SaveDebug(player, inv, stationId, spawnPointId, saveLocationLabel);
     }
 
-    public void EnsurePlayerExists()
+public void EnsurePlayerExists()
     {
         if (_playerInstance != null)
             return;
@@ -228,6 +239,7 @@ public class PlayerSessionManager : MonoBehaviour
             return;
         }
 
+        EnsureSingleAudioListener();
         DontDestroyOnLoad(playerObject);
         GameManager.player = _playerInstance;
         GameManager.inventory = _playerInstance.GetInventory();
@@ -294,6 +306,12 @@ public class PlayerSessionManager : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(addPaintingFragmentKey))
+            TryAddNextDebugPaintingFragment();
+
+        if (Input.GetKeyDown(quickSaveKey))
+            TryQuickSaveAtNearestStation();
+
         if (!Input.GetKeyDown(deleteSaveKey))
             return;
 
@@ -412,7 +430,7 @@ public class PlayerSessionManager : MonoBehaviour
         return true;
     }
 
-    private void PlacePlayer(Vector3 position, Quaternion rotation)
+private void PlacePlayer(Vector3 position, Quaternion rotation)
     {
         if (_playerInstance == null)
             return;
@@ -432,10 +450,43 @@ public class PlayerSessionManager : MonoBehaviour
         }
 
         Time.timeScale = 1f;
+        EnsureSingleAudioListener();
         GameManager.EnablePlayerInput();
     }
 
-    private void ResetRuntimeState()
+    private void EnsureSingleAudioListener()
+    {
+        if (_playerRootInstance == null)
+            return;
+
+        AudioListener[] listeners = _playerRootInstance.GetComponentsInChildren<AudioListener>(true);
+        if (listeners == null || listeners.Length == 0)
+            return;
+
+        AudioListener preferred = null;
+        for (int i = 0; i < listeners.Length; i++)
+        {
+            AudioListener listener = listeners[i];
+            if (listener != null && listener.gameObject.name == "Main Camera")
+            {
+                preferred = listener;
+                break;
+            }
+        }
+
+        if (preferred == null)
+            preferred = listeners[0];
+
+        for (int i = 0; i < listeners.Length; i++)
+        {
+            AudioListener listener = listeners[i];
+            if (listener != null)
+                listener.enabled = listener == preferred;
+        }
+    }
+
+    
+private void ResetRuntimeState()
     {
         CollectedWorldObjectState.Clear();
         QuestProgressState.Clear();
@@ -500,5 +551,62 @@ public class PlayerSessionManager : MonoBehaviour
     {
         return string.Equals(sceneName, MenuSceneName, System.StringComparison.Ordinal) ||
                string.Equals(sceneName, HomeSceneName, System.StringComparison.Ordinal);
+    }
+
+
+    private void TryAddNextDebugPaintingFragment()
+    {
+        PlayerInventory inventory = GameManager.inventory;
+        if (inventory == null)
+        {
+            Debug.LogWarning("[PlayerSessionManager] NumPad8 pressed, but PlayerInventory is not available.");
+            return;
+        }
+
+        for (int i = 0; i < DebugPaintingFragmentIds.Length; i++)
+        {
+            string itemId = DebugPaintingFragmentIds[i];
+            if (inventory.Has(itemId))
+                continue;
+
+            if (inventory.TryAddById(itemId))
+                Debug.Log($"[PlayerSessionManager] NumPad8 added painting fragment '{itemId}'.", this);
+            else
+                Debug.LogWarning($"[PlayerSessionManager] NumPad8 failed to add painting fragment '{itemId}'.", this);
+
+            return;
+        }
+
+        Debug.Log("[PlayerSessionManager] NumPad8 pressed, but all painting fragments are already collected.", this);
+    }
+
+private void TryQuickSaveAtNearestStation()
+    {
+        Player player = GameManager.player;
+        if (player == null)
+        {
+            Debug.LogWarning("[PlayerSessionManager] NumPad5 pressed, but player is not available.", this);
+            return;
+        }
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (IsMenuScene(activeScene.name))
+        {
+            Debug.LogWarning("[PlayerSessionManager] NumPad5 pressed in menu scene. Save skipped.", this);
+            return;
+        }
+
+        SceneSpawnPoint defaultSpawn = SceneSpawnPoint.FindDefaultOrFirst(activeScene);
+        if (defaultSpawn == null)
+        {
+            Debug.LogWarning($"[PlayerSessionManager] NumPad5 pressed, but scene '{activeScene.name}' has no SceneSpawnPoint.", this);
+            return;
+        }
+
+        PlayerInventory inventory = GameManager.inventory != null ? GameManager.inventory : player.GetInventory();
+        string saveLocationLabel = activeScene.name;
+        SaveCurrentGame(player, inventory, string.Empty, defaultSpawn.SpawnPointId, saveLocationLabel);
+
+        Debug.Log($"[PlayerSessionManager] NumPad5 quick-saved to default spawn '{defaultSpawn.SpawnPointId}' in scene '{activeScene.name}'.", defaultSpawn);
     }
 }

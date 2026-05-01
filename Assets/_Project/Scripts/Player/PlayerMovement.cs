@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] private float jumpLimit = 35f;
+    [SerializeField] private float externalImpulseLimit = 80f;
     [SerializeField] private float coyoteTime = 0.2f;
 
     [Header("References")]
@@ -22,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
     private float coyoteTimer;
+    private float externalImpulseLimitTimer;
     private bool jumpConsumedUntilLanding;
     private bool hasLeftGroundSinceJump;
 
@@ -39,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
     {
         UpdateCoyoteTimer();
         HandleJump();
+        UpdateExternalImpulseLimitTimer();
         LimitJumpVelocity();
     }
 
@@ -163,9 +166,39 @@ public class PlayerMovement : MonoBehaviour
 
     private void LimitJumpVelocity()
     {
-        if (rb.velocity.y > jumpLimit)
-            rb.velocity = new Vector3(rb.velocity.x, jumpLimit, rb.velocity.z);
+        // Keep regular jump and external impulses independent:
+        // while external impulse window is active, clamp only by externalImpulseLimit.
+        float activeLimit = externalImpulseLimitTimer > 0f ? externalImpulseLimit : jumpLimit;
+        if (rb.velocity.y > activeLimit)
+            rb.velocity = new Vector3(rb.velocity.x, activeLimit, rb.velocity.z);
     }
 
     public bool IsGrounded() => coyoteTimer > 0f;
+
+    public void AllowExternalVerticalImpulse(float duration)
+    {
+        externalImpulseLimitTimer = Mathf.Max(externalImpulseLimitTimer, duration);
+    }
+
+    public void ApplyExternalImpulse(Vector3 impulse, ForceMode forceMode, float limitDuration = 0.5f, bool resetVelocity = true)
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+
+        if (rb == null)
+            return;
+
+        AllowExternalVerticalImpulse(limitDuration);
+
+        if (resetVelocity)
+            rb.velocity = Vector3.zero;
+
+        rb.AddForce(impulse, forceMode);
+    }
+
+    private void UpdateExternalImpulseLimitTimer()
+    {
+        if (externalImpulseLimitTimer > 0f)
+            externalImpulseLimitTimer = Mathf.Max(0f, externalImpulseLimitTimer - Time.deltaTime);
+    }
 }

@@ -3,6 +3,10 @@
 [RequireComponent(typeof(Rigidbody))]
 public class GrapplingHook : MonoBehaviour
 {
+    [Header("Unlock")]
+    [SerializeField] private bool requireUnlockItem = true;
+    [SerializeField] private string unlockItemId = "TapeMeasure";
+
     [Header("PlayerWeapon Integration (drag PlayerWeapon script)")]
     [SerializeField] private PlayerWeapon weapon;
 
@@ -106,6 +110,17 @@ public class GrapplingHook : MonoBehaviour
 
     private void Update()
     {
+        if (!IsUnlocked())
+        {
+            if (isGrappling)
+                StopGrapple();
+
+            if (tapeMeshRenderer != null)
+                tapeMeshRenderer.enabled = false;
+
+            return;
+        }
+
         if (Input.GetMouseButtonDown(1) && !isGrappling)
             StartGrapple();
 
@@ -131,6 +146,9 @@ public class GrapplingHook : MonoBehaviour
 
     private void StartGrapple()
     {
+        if (!IsUnlocked())
+            return;
+
         if (!weapon)
         {
             Debug.LogError("[GrapplingHook] PlayerWeapon скрипт не назначен!", this);
@@ -273,6 +291,18 @@ public class GrapplingHook : MonoBehaviour
         float verticalSign = Mathf.Sign(toTarget.y);
         Vector3 totalForce = (horizontalDir * horizontalForce) + (Vector3.up * verticalSign * verticalForce);
         return totalForce * rb.mass;
+    }
+
+    private bool IsUnlocked()
+    {
+        if (!requireUnlockItem || string.IsNullOrWhiteSpace(unlockItemId))
+            return true;
+
+        PlayerInventory inventory = GameManager.inventory;
+        if (inventory == null)
+            inventory = GetComponent<PlayerInventory>();
+
+        return inventory != null && inventory.Has(unlockItemId);
     }
 
     private void OnDestroy()

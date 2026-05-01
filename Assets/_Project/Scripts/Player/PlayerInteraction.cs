@@ -8,6 +8,10 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private float interactRange = 2f;
 
+    [Header("Spring / UpWind")]
+    [SerializeField] private float upWindImpulseForce = 1250f;
+    [SerializeField] private float upWindLimitDuration = 0.75f;
+
     [Header("References")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private PlayerPause playerPause;
@@ -148,11 +152,19 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleUpWind(Collider other)
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
+        PlayerMovement movement = GetComponent<PlayerMovement>();
+        if (movement != null)
         {
-            rb.velocity = Vector3.zero;
-            rb.AddForce(other.transform.up * 1250f, ForceMode.Impulse);
+            movement.ApplyExternalImpulse(other.transform.up * upWindImpulseForce, ForceMode.Impulse, upWindLimitDuration);
+        }
+        else
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.AddForce(other.transform.up * upWindImpulseForce, ForceMode.Impulse);
+            }
         }
 
         Animator animator = GetComponent<Animator>();

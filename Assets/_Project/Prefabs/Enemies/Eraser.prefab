@@ -2648,8 +2648,8 @@ MonoBehaviour:
   ragdollControl: {fileID: 5079691633837592628}
   mainCollider: {fileID: 6786041488273062950}
   hpCanvasPrefab: {fileID: 4368917641135858692, guid: dbf8895c2d0f03041a6bd90918c63086, type: 3}
-  hasLoot: 1
-  lootPrefab: {fileID: 3633840203402692087, guid: 7131edd4de14b8547861f3fe37857281, type: 3}
+  hasLoot: 0
+  lootPrefab: {fileID: 0}
 --- !u!114 &5848285325571148186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2662,7 +2662,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1397433f55b2b94e878cead358aea70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dmg: 5
   _look: {fileID: 5451729119501259416}
   curve:
     serializedVersion: 2
@@ -2697,6 +2696,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  attackRange: 3.25
+  maxAttackHeightDelta: 2.5
+  chaseOffset: 1.5
+  attackCooldown: 2
+  dmg: 5
 --- !u!114 &5079691633837592628
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -25,7 +25,8 @@ public static class BuildStoryAuthoringScene
     private const string FifteenPanelPrefabPath = "Assets/_Project/Scripts/MiniGames/Fifteen/FifteenPuzzlePanel.prefab";
     private const string EraserPrefabPath = "Assets/_Project/Prefabs/Enemies/Eraser.prefab";
     private const string EraserBossPrefabPath = "Assets/_Project/Prefabs/Enemies/EraserBoss.prefab";
-    private const string ActiveSceneTransitionName = "Game assets";
+    private const string ActiveSceneTransitionName = "grappletest";
+    private const string DefaultFinalCutsceneVideoPath = "Assets/_Project/2D/Intro.mp4";
 
     private sealed class StoryAssets
     {
@@ -93,7 +94,7 @@ public static class BuildStoryAuthoringScene
         Transform village = CreateSectionRoot(root.transform, "05_Village", new Vector3(300f, 0f, 0f), "5. Деревня");
         Transform finalCity = CreateSectionRoot(root.transform, "06_FinalCity", new Vector3(360f, 0f, 0f), "6. Город / Финал");
 
-        CreateSpawnPoint(house, "house_start", new Vector3(-11f, 1.1f, -5f), Quaternion.Euler(0f, 25f, 0f), true);
+        CreateSpawnPoint(house, "house_start", new Vector3(-11f, 1.1f, -5f), Quaternion.Euler(0f, 25f, 0f), false);
         CreateSpawnPoint(city, "city_hub", new Vector3(-11f, 1.1f, -5f), Quaternion.Euler(0f, 25f, 0f), false);
         CreateSpawnPoint(office, "office_entry", new Vector3(-11f, 1.1f, -5f), Quaternion.Euler(0f, 25f, 0f), false);
         CreateSpawnPoint(barn, "barn_entry", new Vector3(-11f, 1.1f, -5f), Quaternion.Euler(0f, 25f, 0f), false);
@@ -209,6 +210,7 @@ public static class BuildStoryAuthoringScene
         CreateSectionNote(parent, "TemplateNote_City", new Vector3(-12f, 0.6f, 8f), "Город", "Паттерн NPC+награда", "Рамка и NPC, которые сразу отдают предмет, собраны через раздельные hotspot-объекты Talk/Reward. Это не прихоть сцены, а текущее ограничение interaction path: для надежного authoring нельзя вешать и диалог, и reward на один и тот же hit-объект.");
         CreateDialogueNpc(parent, "NPC_Elder1", new Vector3(-6f, 1f, 1f), "Старейшина 1", CreateDialogue("Старейшина 1", "elder1", "Игрок", "Ох, юный друг, представляю, какой путь тебе предстоит преодолеть, чтобы восстановить картину.", "Я буду тебе помогать. Ещё увидимся."));
         CreateDialogueRewardNpc(parent, "NPC_Frame_GivesFragment1", new Vector3(-1f, 1f, -1.5f), CreateDialogue("Рамка", "frame", "Игрок", "Вот один фрагмент, когда-то их было больше, но я хз."), new InventoryItemData[] { assets.fragment1 }, "Рамка -> Фрагмент #1");
+        CreateFragmentActivatorDemo(parent, assets);
         CreateDialogueNpc(parent, "Hint_ToOffice", new Vector3(3f, 1f, 3.5f), "Подсказка: Офис", CreateDialogue("Город", "hub", "Игрок", "Следующая зона — Офис. Там квест с ластиками."));
         CreateDialogueNpc(parent, "Hint_ToBarn", new Vector3(6f, 1f, 3.5f), "Подсказка: Коровник", CreateDialogue("Город", "hub", "Игрок", "Следующая зона — Коровник. Там мини-игра на захват поля."));
         CreateDialogueNpc(parent, "Hint_ToWarehouse", new Vector3(9f, 1f, 3.5f), "Подсказка: Склад", CreateDialogue("Город", "hub", "Игрок", "Следующая зона — Склад. Понадобятся рычаги и пятнашки."));
@@ -275,9 +277,14 @@ private static void BuildWarehouseSection(Transform parent, StoryAssets assets)
         GameObject bar1 = CreatePrimitive(parent, "DoorBar_1", PrimitiveType.Cube, new Vector3(10.6f, 1f, -1.5f), new Vector3(3f, 0.3f, 0.3f), false);
         GameObject bar2 = CreatePrimitive(parent, "DoorBar_2", PrimitiveType.Cube, new Vector3(10.6f, 2f, 0f), new Vector3(3f, 0.3f, 0.3f), false);
         GameObject bar3 = CreatePrimitive(parent, "DoorBar_3", PrimitiveType.Cube, new Vector3(10.6f, 3f, 1.5f), new Vector3(3f, 0.3f, 0.3f), false);
-        ConfigureLever(CreateLever(parent, "Lever_1", new Vector3(-7f, 0.9f, -3f), "Рычаг 1"), bar1.transform, LeverSwitch.RotationAxis.Z, 90f);
-        ConfigureLever(CreateLever(parent, "Lever_2", new Vector3(-3.5f, 0.9f, -3f), "Рычаг 2"), bar2.transform, LeverSwitch.RotationAxis.Z, 90f);
-        ConfigureLever(CreateLever(parent, "Lever_3", new Vector3(0f, 0.9f, -3f), "Рычаг 3"), bar3.transform, LeverSwitch.RotationAxis.Z, 90f);
+        GameObject mainDoor = CreatePrimitive(parent, "MainDoor_RotatesAfterAllLevers", PrimitiveType.Cube, new Vector3(12f, 2f, 0f), new Vector3(0.25f, 3.5f, 3.5f), true);
+        GameObject lever1 = CreateLever(parent, "Lever_1", new Vector3(-7f, 0.9f, -3f), "Рычаг 1");
+        GameObject lever2 = CreateLever(parent, "Lever_2", new Vector3(-3.5f, 0.9f, -3f), "Рычаг 2");
+        GameObject lever3 = CreateLever(parent, "Lever_3", new Vector3(0f, 0.9f, -3f), "Рычаг 3");
+        ConfigureLever(lever1, lever1.transform, LeverSwitch.RotationAxis.Z, 90f);
+        ConfigureLever(lever2, lever2.transform, LeverSwitch.RotationAxis.Z, 90f);
+        ConfigureLever(lever3, lever3.transform, LeverSwitch.RotationAxis.Z, 90f);
+        CreateMultiLeverDoorController(parent, new[] { lever1.GetComponent<LeverSwitch>(), lever2.GetComponent<LeverSwitch>(), lever3.GetComponent<LeverSwitch>() }, mainDoor.transform, null);
 
         GameObject stairsRoot = new GameObject("PuzzleReward_BoxStairs");
         stairsRoot.transform.SetParent(parent, false);
@@ -291,6 +298,7 @@ private static void BuildWarehouseSection(Transform parent, StoryAssets assets)
         CreateWorldLabel(fifteen.transform, "Пятнашки -> лестница", new Vector3(0f, 2.8f, 0f));
         GameObject fifteenReward = CreatePersistentActionHost(parent, "Reward_Boxes_FromFifteen", new Vector3(-1f, 0.5f, 8f), null, new GameObject[] { stairsRoot }, null);
         AddPersistentUnityEventListener(fifteen.GetComponent<FifteenPuzzlePanel>(), "onSuccess", fifteenReward.GetComponent<PersistentActionTrigger>().Complete);
+        CreateToggleOnSuccessDemo(parent, fifteen.GetComponent<FifteenPuzzlePanel>());
 
         CreateDialogueRewardNpc(parent, "NPC_Elder4_GivesTapeMeasure", new Vector3(4f, 1f, -2f), CreateDialogue("Старейшина 4", "elder4", "Игрок", "Нужно выбраться отсюда, держи рулетку, с ее помощью, ты сможешь взобраться на те вершины.", "Она тебе ещё пригодится. Удачи!"), new InventoryItemData[] { assets.tapeMeasure }, "Старейшина 4 -> Рулетка");
         CreatePickup(parent, "Fragment4_AtExit", new Vector3(13.5f, 0.8f, 0f), assets.fragment4, true, "Фрагмент #4");
@@ -369,7 +377,7 @@ private static void CreateReadmeArea(Transform parent)
     {
         Transform readme = CreateSectionRoot(parent, "00_Readme", new Vector3(-60f, 0f, 0f), "README / Ограничения");
         string text =
-            "1. Все scene transitions сейчас настроены на этот же scene 'Game assets' и разные SceneSpawnPoint — это сделано специально для проверки одного authoring scene." + "\n" +
+            "1. Все scene transitions сейчас настроены на этот же scene 'grappletest' и разные SceneSpawnPoint — это сделано специально для проверки одного authoring scene." + "\n" +
             "2. При переносе в реальные сцены у trigger'ов нужно заменить targetSceneName/targetSpawnPointId." + "\n" +
             "3. Dialogue + instant reward NPC сейчас собраны через раздельные Talk/Reward hotspot'ы — это текущее безопасное authoring-решение." + "\n" +
             "4. Kill quest на 12 ластиков, финальная рамка на 6 фрагментов и persistent world-state для мини-игр уже поддержаны кодом этой сцены." + "\n" +
@@ -440,6 +448,73 @@ private static void CreateReadmeArea(Transform parent)
         return trigger;
     }
 
+    private static void CreateFragmentActivatorDemo(Transform parent, StoryAssets assets)
+    {
+        GameObject root = new GameObject("FragmentSceneActivator_Demo");
+        root.transform.SetParent(parent, false);
+        root.transform.localPosition = new Vector3(0f, 0f, 7f);
+        CreateWorldLabel(root.transform, "CollectionFragmentSceneActivator: 1/3/5 fragments", new Vector3(0f, 3.2f, 0f));
+
+        GameObject oneFragment = CreatePrimitive(root.transform, "HubObject_EnableAt1Fragment", PrimitiveType.Cube, new Vector3(-2.5f, 0.6f, 0f), Vector3.one, true);
+        GameObject threeFragments = CreatePrimitive(root.transform, "HubObject_EnableAt3Fragments", PrimitiveType.Cube, new Vector3(0f, 0.6f, 0f), Vector3.one, true);
+        GameObject fiveFragments = CreatePrimitive(root.transform, "HubObject_EnableAt5Fragments", PrimitiveType.Cube, new Vector3(2.5f, 0.6f, 0f), Vector3.one, true);
+        oneFragment.SetActive(false);
+        threeFragments.SetActive(false);
+        fiveFragments.SetActive(false);
+
+        CollectionFragmentSceneActivator activator = root.AddComponent<CollectionFragmentSceneActivator>();
+        SerializedObject so = new SerializedObject(activator);
+        so.FindProperty("collectionSet").objectReferenceValue = assets.paintingSet;
+        SerializedProperty rules = so.FindProperty("rules");
+        rules.arraySize = 3;
+        SetFragmentActivatorRule(rules.GetArrayElementAtIndex(0), 1, new[] { oneFragment }, null);
+        SetFragmentActivatorRule(rules.GetArrayElementAtIndex(1), 3, new[] { threeFragments }, null);
+        SetFragmentActivatorRule(rules.GetArrayElementAtIndex(2), 5, new[] { fiveFragments }, null);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(activator);
+    }
+
+    private static void CreateMultiLeverDoorController(Transform parent, LeverSwitch[] levers, Transform doorToRotate, GameObject[] barsToDisable)
+    {
+        GameObject controllerObject = new GameObject("MultiLeverDoorController_All3Levers");
+        controllerObject.transform.SetParent(parent, false);
+        controllerObject.transform.localPosition = new Vector3(7f, 0.5f, -5f);
+        CreateWorldLabel(controllerObject.transform, "All 3 levers -> rotate main door", new Vector3(0f, 1.2f, 0f));
+
+        MultiLeverDoorController controller = controllerObject.AddComponent<MultiLeverDoorController>();
+        SerializedObject so = new SerializedObject(controller);
+        SetObjectReferenceArray(so.FindProperty("levers"), levers);
+        so.FindProperty("doorToRotate").objectReferenceValue = doorToRotate;
+        so.FindProperty("doorRotationDelta").vector3Value = new Vector3(0f, 90f, 0f);
+        so.FindProperty("useLocalRotation").boolValue = true;
+        so.FindProperty("rotationDuration").floatValue = 0.8f;
+        SetObjectReferenceArray(so.FindProperty("disableOnUnlocked"), barsToDisable);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(controller);
+    }
+
+    private static void CreateToggleOnSuccessDemo(Transform parent, FifteenPuzzlePanel puzzle)
+    {
+        GameObject root = new GameObject("ToggleObjectsOnSuccess_Demo");
+        root.transform.SetParent(parent, false);
+        root.transform.localPosition = new Vector3(-8f, 0f, 7f);
+        CreateWorldLabel(root.transform, "Fifteen onSuccess -> disable red / enable green", new Vector3(0f, 2.6f, 0f));
+
+        GameObject before = CreatePrimitive(root.transform, "DisabledOnSuccess_RedCube", PrimitiveType.Cube, new Vector3(-1.2f, 0.6f, 0f), Vector3.one, true);
+        GameObject after = CreatePrimitive(root.transform, "EnabledOnSuccess_GreenCube", PrimitiveType.Cube, new Vector3(1.2f, 0.6f, 0f), Vector3.one, true);
+        after.SetActive(false);
+
+        ToggleObjectsOnSuccess toggle = root.AddComponent<ToggleObjectsOnSuccess>();
+        SerializedObject so = new SerializedObject(toggle);
+        SetObjectReferenceArray(so.FindProperty("enableObjects"), new[] { after });
+        SetObjectReferenceArray(so.FindProperty("disableObjects"), new[] { before });
+        so.FindProperty("executeOnlyOnce").boolValue = true;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(toggle);
+
+        AddPersistentUnityEventListener(puzzle, "onSuccess", toggle.Execute);
+    }
+
     private static void CreateNoteObject(Transform parent, string name, Vector3 localPosition, string title, string subtitle, string text)
     {
         GameObject note = CreatePrimitive(parent, name, PrimitiveType.Cube, localPosition, new Vector3(0.7f, 0.1f, 1f), true);
@@ -466,15 +541,18 @@ private static void CreateReadmeArea(Transform parent)
     private static void CreateDialogueRewardNpc(Transform parent, string name, Vector3 localPosition, Dialogue dialogue, InventoryItemData[] rewardItems, string label)
     {
         GameObject root = CreateNpcBody(parent, name, PrimitiveType.Capsule, localPosition, new Vector3(1f, 2f, 1f), label);
-        UnityEngine.Object.DestroyImmediate(root.GetComponent<Collider>());
-        GameObject talk = CreatePrimitive(root.transform, "TalkHotspot", PrimitiveType.Cube, new Vector3(-1.4f, 1f, 1f), new Vector3(0.8f, 1f, 0.8f), true);
-        DialogueTrigger dialogueTrigger = talk.AddComponent<DialogueTrigger>();
+        EnsurePersistentId(root);
+
+        QuestCompleteActions actions = root.AddComponent<QuestCompleteActions>();
+        SetQuestActionHost(actions, rewardItems, null, null);
+
+        DialogueTrigger dialogueTrigger = root.AddComponent<DialogueTrigger>();
         SetDialogue(dialogueTrigger, "dialogue", dialogue);
-        CreateWorldLabel(talk.transform, "Talk", new Vector3(0f, 0.9f, 0f));
-        GameObject reward = CreatePrimitive(root.transform, "RewardHotspot", PrimitiveType.Cube, new Vector3(1.4f, 1f, 1f), new Vector3(0.8f, 1f, 0.8f), true);
-        InventoryRewardInteractable rewardInteractable = reward.AddComponent<InventoryRewardInteractable>();
-        SetRewardInteractable(rewardInteractable, null, true, rewardItems, true);
-        CreateWorldLabel(reward.transform, "Reward", new Vector3(0f, 0.9f, 0f));
+        SetDialogue(dialogueTrigger, "afterCompletedDialogue", CreateDialogue(dialogue.name, dialogue.email, dialogue.recipientName, "Награда уже выдана."));
+        SetPrivateBool(dialogueTrigger, "completeAfterDialogue", true);
+        SetPrivateObjectReference(dialogueTrigger, "persistentStateId", root.GetComponent<PersistentWorldObjectId>());
+        AddDialogueCompletedListener(dialogueTrigger, "dialogue", actions.Run);
+        CreateWorldLabel(root.transform, "Talk -> reward on dialogue complete", new Vector3(0f, 2.4f, 0f));
     }
 
     private static GameObject CreatePickup(Transform parent, string name, Vector3 localPosition, InventoryItemData item, bool persistent, string label)
@@ -738,6 +816,16 @@ private static InventoryItemData EnsureGeneralItem(string itemId, string display
             arrayProperty.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
     }
 
+    private static void SetFragmentActivatorRule(SerializedProperty ruleProperty, int minFragments, GameObject[] enableObjects, GameObject[] disableObjects)
+    {
+        if (ruleProperty == null)
+            return;
+
+        ruleProperty.FindPropertyRelative("minCollectedFragments").intValue = minFragments;
+        SetObjectReferenceArray(ruleProperty.FindPropertyRelative("enableObjects"), enableObjects);
+        SetObjectReferenceArray(ruleProperty.FindPropertyRelative("disableObjects"), disableObjects);
+    }
+
     private static void AddPersistentUnityEventListener(Component target, string eventFieldName, UnityAction call)
     {
         if (target == null || call == null)
@@ -752,6 +840,29 @@ private static InventoryItemData EnsureGeneralItem(string itemId, string display
             field.SetValue(target, unityEvent);
         }
         UnityEventTools.AddPersistentListener(unityEvent, call);
+        EditorUtility.SetDirty(target);
+    }
+
+    private static void AddDialogueCompletedListener(UnityEngine.Object target, string dialogueFieldName, UnityAction call)
+    {
+        if (target == null || call == null)
+            return;
+
+        FieldInfo field = target.GetType().GetField(dialogueFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        if (field == null)
+            return;
+
+        Dialogue dialogue = field.GetValue(target) as Dialogue;
+        if (dialogue == null)
+        {
+            dialogue = new Dialogue();
+            field.SetValue(target, dialogue);
+        }
+
+        if (dialogue.onCompleted == null)
+            dialogue.onCompleted = new UnityEvent();
+
+        UnityEventTools.AddPersistentListener(dialogue.onCompleted, call);
         EditorUtility.SetDirty(target);
     }
 
@@ -858,6 +969,7 @@ private static VideoCutsceneOverlayPlayer CreateCutsceneOverlay(Transform parent
         SetPrivateObjectReference(overlayPlayer, "videoImage", videoImage);
         SetPrivateObjectReference(overlayPlayer, "videoPlayer", videoPlayer);
         SetPrivateObjectReference(overlayPlayer, "skipButton", skipButton);
+        SetPrivateObjectReference(overlayPlayer, "videoClip", AssetDatabase.LoadAssetAtPath<VideoClip>(DefaultFinalCutsceneVideoPath));
         SetPrivateBool(overlayPlayer, "returnToMenuOnFinish", true);
         EditorUtility.SetDirty(overlayPlayer);
         return overlayPlayer;

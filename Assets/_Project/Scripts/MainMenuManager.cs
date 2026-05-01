@@ -26,7 +26,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Button skipIntroButton;
     [SerializeField] private RenderTexture introRenderTexture;
     [SerializeField] private VideoClip introVideoClip;
-    [SerializeField] private string newGameSceneName = "grappletest";
+    [SerializeField] private string newGameSceneName = "0. Home";
 
     private Animator _cameraAnimator;
     private bool _introInProgress;
@@ -48,7 +48,7 @@ public class MainMenuManager : MonoBehaviour
         RefreshSaveSlots();
     }
 
-    private void Update()
+private void Update()
     {
         if (!_introInProgress)
             return;
@@ -56,8 +56,7 @@ public class MainMenuManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) ||
             Input.GetKeyDown(KeyCode.Space) ||
             Input.GetKeyDown(KeyCode.Return) ||
-            Input.GetKeyDown(KeyCode.KeypadEnter) ||
-            Input.GetMouseButtonDown(0))
+            Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             SkipIntro();
         }
