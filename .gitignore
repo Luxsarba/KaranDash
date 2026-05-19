@@ -78,6 +78,24 @@ Build*.rar
 Assets/**/Unity.VisualScripting.Generated/**/UnitOptions.db
 .idea/
 /Exports/
+/generated_practice_docs/
+/practice_reports/
+/filled_diaries/
+/filled_diaries_v3/
+/tmp-docx/
+/tmp-docx-fill/
+/.codex-docx-mcp/
+/__pycache__/
+/build_only_diary_reports.py
+/docx_mcp_launcher.ps1
+/fill_practice_diaries.py
+/fill_practice_docs.py
+/generate_practice_diaries.ps1
+/inspect_docx.py
+/inspect_docx_xml.py
+/_check_docx_xml.py
+/_temp_report_template.docx
+/practice_ids.md
 /Assets/_Project/Scripts/Editor.meta
 /Assets/_Project/Scripts/Editor/GameplayUpdatePackageExporter.cs
 /Assets/_Project/Scripts/Editor/GameplayUpdatePackageExporter.cs.meta
@@ -86,4 +104,3 @@ Assets/**/Unity.VisualScripting.Generated/**/UnitOptions.db
 /Assets/_Project/Scripts/Editor/NoteSystemPrefabSync.cs
 /Assets/_Project/Scripts/Editor/NoteSystemPrefabSync.cs.meta
 /Assets/_ThirdParty/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
-

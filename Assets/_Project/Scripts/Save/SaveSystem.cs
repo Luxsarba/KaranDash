@@ -47,6 +47,17 @@ public static class SaveSystem
         SaveToPath(DebugSavePath, player, inv, stationId, spawnPointId, saveLocationLabel, "debug");
     }
 
+    public static void SaveTransition(int slotIndex, Player player, PlayerInventory inv, string targetSceneName, string targetSpawnPointId)
+    {
+        ValidateSlotIndex(slotIndex);
+        SaveTransitionToPath(GetSlotPath(slotIndex), player, inv, targetSceneName, targetSpawnPointId, $"slot {slotIndex}");
+    }
+
+    public static void SaveTransitionDebug(Player player, PlayerInventory inv, string targetSceneName, string targetSpawnPointId)
+    {
+        SaveTransitionToPath(DebugSavePath, player, inv, targetSceneName, targetSpawnPointId, "debug");
+    }
+
     public static SaveData Load(int slotIndex)
     {
         ValidateSlotIndex(slotIndex);
@@ -165,6 +176,28 @@ public static class SaveSystem
         string json = JsonUtility.ToJson(data, prettyPrint: true);
         File.WriteAllText(path, json);
         Debug.Log($"[SaveSystem] Saved to: {path}");
+    }
+
+    private static void SaveTransitionToPath(string path, Player player, PlayerInventory inv, string targetSceneName, string targetSpawnPointId, string saveTargetLabel)
+    {
+        if (player == null)
+        {
+            Debug.LogWarning("[SaveSystem] Transition auto-save failed: player is null");
+            return;
+        }
+
+        SaveData data = BuildSaveData(player, inv, stationId: string.Empty, spawnPointId: targetSpawnPointId, saveLocationLabel: targetSceneName);
+        if (!string.IsNullOrWhiteSpace(targetSceneName))
+            data.sceneName = targetSceneName;
+
+        Debug.Log(
+            $"[SaveSystem] Transition auto-save {saveTargetLabel}: scene='{data.sceneName}', spawn='{data.lastSaveSpawnPointId}', " +
+            $"location='{data.saveLocationLabel}', items=[{string.Join(",", data.inventoryItemIds)}], " +
+            $"collected=[{string.Join(",", data.collectedWorldObjectIds)}], quests=[{data.questStates.Length}]");
+
+        string json = JsonUtility.ToJson(data, prettyPrint: true);
+        File.WriteAllText(path, json);
+        Debug.Log($"[SaveSystem] Transition auto-saved to: {path}");
     }
 
     private static SaveData LoadFromPath(string path, string label)

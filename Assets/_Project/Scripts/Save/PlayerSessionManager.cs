@@ -179,6 +179,7 @@ private static readonly Vector3 HiddenSpawnPosition = new Vector3(0f, -10000f, 0
         }
 
         PlayerSessionManager manager = EnsureSession();
+        manager.TryAutoSaveBeforeTransition(sceneName, spawnPointId);
         manager._pendingSaveData = null;
         manager._pendingRequest = new PendingSceneRequest
         {
@@ -190,6 +191,31 @@ private static readonly Vector3 HiddenSpawnPosition = new Vector3(0f, -10000f, 0
         };
         manager._hasPendingRequest = true;
         SceneManager.LoadScene(sceneName);
+    }
+
+    private void TryAutoSaveBeforeTransition(string targetSceneName, string targetSpawnPointId)
+    {
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (IsMenuScene(activeScene.name))
+            return;
+
+        Player player = _playerInstance != null ? _playerInstance : GameManager.player;
+        if (player == null)
+        {
+            Debug.LogWarning("[PlayerSessionManager] Transition auto-save skipped: player is not available.", this);
+            return;
+        }
+
+        PlayerInventory inventory = GameManager.inventory != null ? GameManager.inventory : player.GetInventory();
+
+        if (ActiveSlotIndex.HasValue)
+        {
+            SaveSystem.SaveTransition(ActiveSlotIndex.Value, player, inventory, targetSceneName, targetSpawnPointId);
+            return;
+        }
+
+        if (_useDebugSave)
+            SaveSystem.SaveTransitionDebug(player, inventory, targetSceneName, targetSpawnPointId);
     }
 
     public static void ReturnToMenu()
